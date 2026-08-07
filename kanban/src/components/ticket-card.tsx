@@ -6,6 +6,8 @@ import type { Ticket } from '@/types'
 import type { ActiveState } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
+const STALE_THRESHOLD_MS = 30 * 60 * 1000 // 30 minutes
+
 interface Props {
   ticket: Ticket
   active: ActiveState | null
@@ -18,6 +20,10 @@ export function TicketCard({ ticket, active, onClick }: Props) {
   })
 
   const isActive = active?.agent && active.ticket === ticket.id
+  const isStale =
+    isActive && active!.started
+      ? Date.now() - new Date(active!.started).getTime() > STALE_THRESHOLD_MS
+      : false
 
   return (
     <div ref={setNodeRef} {...listeners} {...attributes} className={cn(isDragging && 'opacity-50')}>
@@ -25,7 +31,7 @@ export function TicketCard({ ticket, active, onClick }: Props) {
         onClick={onClick}
         className={cn(
           'cursor-pointer p-3 transition-shadow hover:shadow-md',
-          isActive && 'ring-2 ring-blue-500/40 bg-blue-500/5',
+          isActive && (isStale ? 'ring-2 ring-amber-500/40 bg-amber-500/5' : 'ring-2 ring-blue-500/40 bg-blue-500/5'),
         )}
       >
         <div className="mb-2 flex items-center gap-2">
@@ -34,9 +40,19 @@ export function TicketCard({ ticket, active, onClick }: Props) {
           </Badge>
           <span className="font-mono text-[10px] text-muted-foreground">#{ticket.id}</span>
           {isActive && (
-            <span className="ml-auto flex items-center gap-1 text-[10px] font-medium text-blue-600">
-              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue-500" />
-              {active!.agent} working
+            <span
+              className={cn(
+                'ml-auto flex items-center gap-1 text-[10px] font-medium',
+                isStale ? 'text-amber-600' : 'text-blue-600',
+              )}
+            >
+              <span
+                className={cn(
+                  'inline-block h-2 w-2 animate-pulse rounded-full',
+                  isStale ? 'bg-amber-500' : 'bg-blue-500',
+                )}
+              />
+              {isStale ? 'stale lock' : `${active!.agent} working`}
             </span>
           )}
         </div>

@@ -103,19 +103,22 @@ For each, the user answers yes/no:
   the user wrote. Show the diff of what you're adding before writing.
 - **GitHub remote** missing, and the project now has a clear direction (an
   existing project, or a greenfield one that just completed `relay`) → ask
-  how to connect one, one question, three options — **recommend "create on
-  GitHub"** unless the user already has a remote elsewhere: `draft-tickets`,
-  `review-pr`, and `verify-qa`'s parent-closing check all depend on GitHub
-  issues/PRs through `gh`, so picking local-only quietly disables most of
-  this workflow — say that plainly if the user leans that way, don't let it
-  be a silent tradeoff:
-  - create on GitHub (recommended): ask the repo name, then `gh repo create <name> --private --source=. --remote=origin`
-  - existing remote: ask the URL, then `git remote add origin <url>`
-  - local-only for now: works, but disables `draft-tickets`/`implement-issue`/`review-pr`/`verify-qa` — only pick this if that's intended.
+  whether to connect GitHub now, one question, three options — **recommend
+  "local-only for now"**: the pipeline runs fully local (tickets live in
+  `tickets/*.md`, the kanban board visualizes them, skills move status via
+  `ticket-move.mjs`). GitHub is optional, not required:
+  - **local-only for now** (recommended): tickets are local `.md` files, the
+    kanban board tracks them, skills work without `gh`. When you're ready
+    for GitHub later, run
+    `node kanban/scripts/migrate-to-github.mjs --open` — it pushes local
+    tickets to GitHub issues, links sub-issues, and local files become
+    read-only shadows.
+  - **create on GitHub**: ask the repo name, then
+    `gh repo create <name> --private --source=. --remote=origin`.
+  - **existing remote**: ask the URL, then `git remote add origin <url>`.
 
   Still no direction (empty project, `relay` declined) → skip this
-  question — there's nothing to connect a remote *for* yet. It'll come up
-  naturally once `draft-tickets` needs `gh` and finds none configured.
+  question — there's nothing to connect a remote *for* yet.
 - **Tech stack** unknown, and it's a greenfield project that just completed
   `relay` → ask directly, but don't ask blind: skim the approved BRD/PRD
   for signals (kind of product, expected scale, integrations mentioned) and

@@ -78,7 +78,14 @@ reply with one:
 
 1. **Lanjut — `/implement-issue`** (Recommended). Start coding the first
    ready sub-issue (backend first, then frontend).
-2. **Diskusi / revisi** — adjust the breakdown; say what's off and I'll
+2. **Lanjut — start the kanban board**. `cd kanban && node server.mjs &`,
+   then open the board to see the tickets visually.
+3. **Diskusi / revisi** — adjust the breakdown; say what's off and I'll
    edit the tickets via the API, then re-offer.
-3. **Berhenti** — leave here. Resume later with `/relay` (detects open
+4. **Berhenti** — leave here. Resume later with `/relay` (detects open
    tickets and offers `implement-issue`), or run `/implement-issue` directly.
+
+**GitHub reminder:** these are local tickets right now. When you're ready
+for GitHub, run `node kanban/scripts/migrate-to-github.mjs --open` — it
+pushes them to GitHub issues and local files become read-only shadows.
+Not needed to continue the pipeline; GitHub is optional.
