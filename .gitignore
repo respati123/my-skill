@@ -21,3 +21,6 @@ Thumbs.db
 kanban/data/
 kanban/node_modules/
 kanban/dist/
+
+# Active-lock sidecar (ephemeral — written/cleared by skills during delegation)
+tickets/.active

@@ -3,16 +3,18 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'
 import { TicketCard } from '@/components/ticket-card'
 import type { Ticket } from '@/types'
+import type { ActiveState } from '@/lib/api'
 
 interface Props {
   id: string
   title: string
   accent: string
   tickets: Ticket[]
+  active: ActiveState | null
   onTicketClick: (ticket: Ticket) => void
 }
 
-export function Column({ id, title, accent, tickets, onTicketClick }: Props) {
+export function Column({ id, title, accent, tickets, active, onTicketClick }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -37,6 +39,7 @@ export function Column({ id, title, accent, tickets, onTicketClick }: Props) {
               <TicketCard
                 key={ticket.id}
                 ticket={ticket}
+                active={active}
                 onClick={() => onTicketClick(ticket)}
               />
             ))}

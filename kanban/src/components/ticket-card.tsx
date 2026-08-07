@@ -3,29 +3,42 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { TYPE_STYLES, TYPE_LABELS } from '@/types'
 import type { Ticket } from '@/types'
+import type { ActiveState } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 interface Props {
   ticket: Ticket
+  active: ActiveState | null
   onClick: () => void
 }
 
-export function TicketCard({ ticket, onClick }: Props) {
+export function TicketCard({ ticket, active, onClick }: Props) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: ticket.id,
   })
+
+  const isActive = active?.agent && active.ticket === ticket.id
 
   return (
     <div ref={setNodeRef} {...listeners} {...attributes} className={cn(isDragging && 'opacity-50')}>
       <Card
         onClick={onClick}
-        className="cursor-pointer p-3 transition-shadow hover:shadow-md"
+        className={cn(
+          'cursor-pointer p-3 transition-shadow hover:shadow-md',
+          isActive && 'ring-2 ring-blue-500/40 bg-blue-500/5',
+        )}
       >
         <div className="mb-2 flex items-center gap-2">
           <Badge variant="outline" className={cn('border font-mono text-[10px]', TYPE_STYLES[ticket.type])}>
             {TYPE_LABELS[ticket.type]}
           </Badge>
           <span className="font-mono text-[10px] text-muted-foreground">#{ticket.id}</span>
+          {isActive && (
+            <span className="ml-auto flex items-center gap-1 text-[10px] font-medium text-blue-600">
+              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+              {active!.agent} working
+            </span>
+          )}
         </div>
         <p className="text-sm font-medium leading-snug">{ticket.title}</p>
         {ticket.labels.length > 0 && (

@@ -8,6 +8,18 @@ export async function fetchTickets(): Promise<Ticket[]> {
   return res.json()
 }
 
+export interface ActiveState {
+  ticket: string
+  agent: string
+  started: string
+}
+
+export async function fetchActive(): Promise<ActiveState | null> {
+  const res = await fetch(`${API}/active`)
+  if (!res.ok) return null
+  return res.json()
+}
+
 export async function updateTicketStatus(id: string, status: TicketStatus): Promise<void> {
   const res = await fetch(`${API}/tickets/${id}`, {
     method: 'PATCH',

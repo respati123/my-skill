@@ -21,13 +21,21 @@ Roles are defined in `.agents/agents/` and surfaced through per-harness
 shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
 `role-installer`. Delegate, don't inline:
 
+**0. Active-lock gate.** One ticket works at a time. Check `tickets/.active`:
+if it exists and points at a **different** ticket, stop — tell the user
+"#<id> is being worked on by <agent>; finish it first." If it points at
+this ticket, or is absent, proceed.
+
 1. **Ensure the role resolves** — invoke `role-installer` with task
    `ensure qa`. It copies the role into `.agents/agents/` if missing and
    generates the shim for whatever harness is running.
-2. **On `READY`** — delegate to `qa` through your harness's subagent
-   mechanism (Agent tool, `subagent` tool, …), foreground. Pass it the PR
-   number.
-3. **On `NEEDS_RESTART` or no delegation tool available** — only run the
+2. **On `READY`** — **write `tickets/.active`** with
+   `{"ticket":"<id>","agent":"qa","started":"<ISO now>"}`, then
+   delegate to `qa` through your harness's subagent mechanism (Agent tool,
+   `subagent` tool, …), foreground. Pass it the PR number.
+3. **On return** — **delete `tickets/.active`** (or set `agent: null`), so
+   the board clears the working indicator.
+4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context is independent of the implementation and
    review (verification by the same context that wrote or approved the
    code isn't independent verification); otherwise tell the user what's

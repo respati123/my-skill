@@ -1,9 +1,10 @@
 ---
-id: 0003
+id: '0003'
 type: task
-status: review
+status: qa
 parent: null
-labels: [i18n]
+labels:
+  - i18n
 github-url: null
 ---
 

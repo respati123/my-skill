@@ -176,6 +176,18 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, tickets.map((t) => ({ ...t, labels: JSON.parse(t.labels) })))
   }
 
+  // GET /api/active — which ticket+agent is working right now (from tickets/.active sidecar)
+  if (req.method === 'GET' && url.pathname === '/api/active') {
+    const activePath = path.join(TICKETS_DIR, '.active')
+    if (!fs.existsSync(activePath)) return json(res, 200, null)
+    try {
+      const data = JSON.parse(fs.readFileSync(activePath, 'utf-8'))
+      return json(res, 200, data)
+    } catch {
+      return json(res, 200, null)
+    }
+  }
+
   // PATCH /api/tickets/:id  { status }
   const patchMatch = url.pathname.match(/^\/api\/tickets\/(\d+)/)
   if (req.method === 'PATCH' && patchMatch) {

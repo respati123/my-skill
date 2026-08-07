@@ -21,17 +21,27 @@ Roles are defined in `.agents/agents/` and surfaced through per-harness
 shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
 `role-installer`. Delegate, don't inline:
 
+**0. Active-lock gate.** One ticket works at a time. Check `tickets/.active`:
+if it exists and points at a **different** ticket, stop — tell the user
+"#<id> is being worked on by <agent>; finish it first." If it points at
+this ticket (resuming), or is absent, proceed. The board reads this file to
+show the live status.
+
 1. **Ensure the role resolves** — invoke `role-installer` with task
    `ensure coder`. It copies the role into `.agents/agents/` if missing and
    generates the shim for whatever harness is running.
-2. **On `READY`** — delegate to `coder` through your harness's subagent
-   mechanism (Agent tool, `subagent` tool, …), foreground. Pass it the
-   target sub-issue. **Run coder in a worktree** — it branches, commits, and
-   pushes, so keep that off the main working tree. If your mechanism has an
-   isolation flag (e.g. `isolation: "worktree"`), use it; otherwise set up
-   the worktree yourself (`git worktree add`) and pass its path as the
-   delegate's working directory.
-3. **On `NEEDS_RESTART` or no delegation tool available** — tell the user
+2. **On `READY`** — **write `tickets/.active`** with
+   `{"ticket":"<id>","agent":"coder","started":"<ISO now>"}`, then
+   delegate to `coder` through your harness's subagent mechanism (Agent tool,
+   `subagent` tool, …), foreground. Pass it the target sub-issue. **Run
+   coder in a worktree** — it branches, commits, and pushes, so keep that
+   off the main working tree. If your mechanism has an isolation flag (e.g.
+   `isolation: "worktree"`), use it; otherwise set up the worktree yourself
+   (`git worktree add`) and pass its path as the delegate's working
+   directory.
+3. **On return** — **delete `tickets/.active`** (or set `agent: null`), so
+   the board clears the working indicator.
+4. **On `NEEDS_RESTART` or no delegation tool available** — tell the user
    what's needed (restart to pick up the shim, or a subagent-capable tool)
    and stop; don't silently fall back to inline.
 

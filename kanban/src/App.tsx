@@ -13,10 +13,11 @@ import { TicketCard } from '@/components/ticket-card'
 import { TicketDetail } from '@/components/ticket-detail'
 import { COLUMNS } from '@/types'
 import type { Ticket, TicketStatus } from '@/types'
-import { fetchTickets, updateTicketStatus } from '@/lib/api'
+import { fetchTickets, fetchActive, updateTicketStatus, type ActiveState } from '@/lib/api'
 
 export default function App() {
   const [tickets, setTickets] = useState<Ticket[]>([])
+  const [active, setActive] = useState<ActiveState | null>(null)
   const [activeTicket, setActiveTicket] = useState<Ticket | null>(null)
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +29,7 @@ export default function App() {
   const load = useCallback(async () => {
     try {
       setTickets(await fetchTickets())
+      setActive(await fetchActive())
       setError(null)
     } catch {
       setError('Server not running. Start it with: node kanban/server.mjs')
@@ -101,6 +103,7 @@ export default function App() {
               title={col.title}
               accent={col.accent}
               tickets={tickets.filter((t) => t.status === col.id)}
+              active={active}
               onTicketClick={setSelectedTicket}
             />
           ))}
@@ -109,7 +112,7 @@ export default function App() {
         <DragOverlay>
           {activeTicket && (
             <div className="w-72 opacity-90">
-              <TicketCard ticket={activeTicket} onClick={() => {}} />
+              <TicketCard ticket={activeTicket} active={null} onClick={() => {}} />
             </div>
           )}
         </DragOverlay>
