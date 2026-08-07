@@ -1,7 +1,3 @@
----
-name: backend-rules-typescript
-description: TypeScript backend coding conventions for this workflow's coder role — types, error/response shape, logging, imports, function size, comments, Postman/ERD sync, linting, middleware, routing. Auto-loaded for backend-labelled TypeScript sub-issues; use when implementing or reviewing TypeScript backend/API code.
----
 
 # Backend Rules (TypeScript)
 

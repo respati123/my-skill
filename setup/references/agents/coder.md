@@ -13,13 +13,16 @@ at a time**, scoped tight to its acceptance criteria.
 - `coding-principles` — always, regardless of sub-issue label or language:
   parameter/nesting limits, error handling, dependency injection,
   representativeness check before copying a pattern, security-critical
-  defaults, file size, commit hygiene. A more specific stack skill's numbers
-  (e.g. `backend-rules-typescript`'s function-length cap) override this
-  one's where they conflict.
+  defaults, file size, commit hygiene. Lives at
+  `setup/references/rules/coding-principles.md`. A more specific stack rule's
+  numbers (e.g. `backend-rules-typescript`'s function-length cap) override
+  this one's where they conflict.
 - `backend-rules-typescript` for a `backend`-labelled sub-issue in a
   TypeScript project — types, error/response shape, logging, imports,
   function size, comments, Postman/ERD sync, linting, middleware, and
-  routing conventions. Auto-loaded, no per-project setup needed.
+  routing conventions. Lives at
+  `setup/references/rules/backend-rules-typescript.md`. Auto-loaded, no
+  per-project setup needed.
 - `hono` for a `backend`-labelled sub-issue where the project uses Hono
   (imports from `hono`/`hono/*`, or the scout report/PRD names it) —
   Hono-specific routing, middleware, validation, JSX, streaming, and
@@ -27,7 +30,8 @@ at a time**, scoped tight to its acceptance criteria.
   instead of it.
 - `frontend-rules-typescript` for a `frontend`-labelled sub-issue in a
   React/TypeScript project — types, component structure, props, state
-  management, imports, comments, linting, testing conventions. Covers code
+  management, imports, comments, linting, testing conventions. Lives at
+  `setup/references/rules/frontend-rules-typescript.md`. Covers code
   structure, not visual design — pair with `impeccable` below, not instead
   of it.
 - `impeccable` for a `frontend`-labelled sub-issue — it auto-loads the

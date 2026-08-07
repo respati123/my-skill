@@ -1,7 +1,3 @@
----
-name: coding-principles
-description: Explicit, checkable coding rules for the coder role — parameter/nesting limits, error handling, dependency injection, pattern-representativeness before adopting, security-critical defaults, file size, commit hygiene. Language-agnostic; auto-loaded for every sub-issue. Use when implementing or reviewing any code, not just TypeScript backend/frontend.
----
 
 # Coding Principles (explicit rules)
 

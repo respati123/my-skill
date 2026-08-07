@@ -1,7 +1,3 @@
----
-name: frontend-rules-typescript
-description: TypeScript/React frontend coding conventions for this workflow's coder role — types, component structure, props, state management, imports, comments, linting, testing. Auto-loaded for frontend-labelled TypeScript sub-issues; use when implementing or reviewing React/TypeScript UI code. Distinct from impeccable, which covers visual/design consistency, not code structure.
----
 
 # Frontend Rules (TypeScript/React)
 

@@ -32,7 +32,11 @@ A PRD describing a flow that nothing can support is just a second round of back-
 **Code exists** — read this repo, not the web; the BRD already settled the external context.
 - Similar existing features (routes, components, UI patterns) so you follow conventions instead of inventing them.
 - Existing endpoints and data model touching this area.
-- The project's coding-rules skills — `coding-principles` always, plus `backend-rules-typescript` (+ `hono`) and/or `frontend-rules-typescript` by label. They're vendored in this repo, same ones `implement-issue` loads, so this PRD doesn't ask for something those rules forbid.
+- The project's coding rules — `coding-principles` always, plus
+  `backend-rules-typescript` (+ `hono`) and/or `frontend-rules-typescript`
+  by label. They live at `setup/references/rules/`, same ones
+  `implement-issue` loads, so this PRD doesn't ask for something those rules
+  forbid.
 
 **Greenfield — no code yet** — read the domain model instead: `CONTEXT.md` / `CONTEXT-MAP.md` and `docs/adr/` from `lexicon`. Entity names, boundaries, and relationships play the role the codebase would.
 

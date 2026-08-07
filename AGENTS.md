@@ -23,6 +23,9 @@ here — there are no dependencies on `~/.agents/skills/` or any external folder
   (`.agents/roles/`, the source-of-truth `role-installer` restores from) **and
   working copies** (`.agents/agents/`, skip-existing, what harnesses shim to).
   Harness-agnostic — no `.claude/` hardcoding, no skill-path dependency.
+  Coding rules (`coding-principles`, `backend-rules-typescript`,
+  `frontend-rules-typescript`) live at `references/rules/` as **reference
+  docs the roles load**, not standalone skills.
 - `research/` — background domain research for `draft-brd`.
 - `impeccable/` — design system; `draft-prd` calls its `shape` sub-skill.
   **Folder name is a runtime contract** — its scripts hardcode `impeccable/`;
@@ -48,11 +51,12 @@ interrogate → draft-brd → lexicon → draft-prd
 ```
 
 Every stage — pipeline (`draft-tickets`, `implement-issue`, `review-pr`,
-`verify-qa`), helpers (`setup`, `research`), design system (`impeccable`), and
-coding-rules (`coding-principles`, `backend-rules-typescript`,
-`frontend-rules-typescript`) — lives in this repo. No `~/.agents/skills/`
-dependency. Roles (`scout`/`pm`/`coder`/`techlead`/`qa`/`role-installer`) ship
-as templates inside `setup/references/agents/`; `setup` deposits them to
+`verify-qa`), helpers (`setup`, `research`), design system (`impeccable`) —
+lives in this repo. No `~/.agents/skills/` dependency. Roles
+(`scout`/`pm`/`coder`/`techlead`/`qa`/`role-installer`) ship as templates
+inside `setup/references/agents/`; coding rules (`coding-principles`,
+`backend-rules-typescript`, `frontend-rules-typescript`) ship as reference
+docs inside `setup/references/rules/`. `setup` deposits roles to
 `.agents/roles/` (pristine) and `.agents/agents/` (working), then shims them
 into whatever harnesses are detected.
 

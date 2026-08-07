@@ -60,7 +60,8 @@ this ticket, or is absent, proceed.
    cases, scope creep, and violations of the project's documented rules.
 3. **Coding-rules check**: apply the specific skill(s) `coder` was supposed
    to load — `coding-principles` always, plus `backend-rules-typescript`/
-   `frontend-rules-typescript` or the project's own equivalents where
+   `frontend-rules-typescript` (at `setup/references/rules/`) or the
+   project's own equivalents where
    relevant — explicitly, not as a vague impression. A clear, checkable
    violation is **BLOCKING**; a stylistic call the skill doesn't actually
    pin down is not.

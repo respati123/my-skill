@@ -22,9 +22,6 @@ each handoff. **Every skill lives in this repo; there are no dependencies on
 | `setup` | Project readiness: git, AGENTS.md, installs roles | `.agents/agents/*`, `AGENTS.md` |
 | `research` | Background domain research for sharp BRD questions | research notes |
 | `impeccable` | Design system; `draft-prd` calls its `shape` sub-skill | design brief |
-| `coding-principles` | Language-agnostic coding rules (loaded by `coder`) | — |
-| `backend-rules-typescript` | TS backend conventions (loaded by `coder`) | — |
-| `frontend-rules-typescript` | TS/React frontend conventions (loaded by `coder`) | — |
 
 The roles (`scout`, `pm`, `coder`, `techlead`, `qa`, `role-installer`) ship as
 templates inside [`setup/`](setup/references/agents/). `setup` deposits them
@@ -36,6 +33,10 @@ to **two places** in the host project:
   customize). Shims (`.claude/agents/`, `.pi/agents/`, `.cursor/agents/`) point
   back at these.
 
+The coding rules (`coding-principles`, `backend-rules-typescript`,
+`frontend-rules-typescript`) live at
+[`setup/references/rules/`](setup/references/rules/) — these are **reference
+documents the `coder` and `techlead` roles load**, not user-triggered skills.
 Edit a role → change it in `.agents/agents/`; the pristine copy in
 `.agents/roles/` stays untouched so a restore always brings back the original.
 

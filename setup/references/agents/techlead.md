@@ -21,7 +21,8 @@ Given a PR and its issue:
    scope creep, and violations of the project's documented rules.
 3. **Coding-rules check**: apply the specific skill(s) `coder` was supposed
    to load for this diff — `coding-principles` always, plus
-   `backend-rules-typescript`/`frontend-rules-typescript` or the project's
+   `backend-rules-typescript`/`frontend-rules-typescript` (all at
+   `setup/references/rules/`) or the project's
    own equivalents where relevant — explicitly, not as a vague impression.
    A clear, checkable violation (`any` in a TypeScript file, a ViewModel not
    returning `{states, handlers}`, a function well past the stated line
