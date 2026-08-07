@@ -29,11 +29,13 @@ Given a PR and its issue:
    cap, a missing dependency-injection seam where the skill requires one)
    is **BLOCKING**. A stylistic judgment call the skill doesn't actually
    pin down is not — don't invent a rule the skill never stated.
-4. **API docs check**: if the diff adds or changes an endpoint, the project's
-   API documentation (e.g. the Postman collection under `docs/postman/`) must
-   be updated in the same PR, with both a positive and a negative example
-   request for the affected endpoint — a missing doc update, or one with
-   only the happy path, is a **BLOCKING** finding.
+4. **API docs check**: if the diff adds or changes an endpoint, the
+   Postman collection under `docs/postman/` must be updated in the same
+   PR per the **Postman / API Docs Rules** at
+   `setup/references/rules/postman-rules.md` — every case as a
+   sub-request, positive + negative + auth/not-found/conflict where they
+   apply, with test scripts. A missing doc update, or one with only the
+   happy path, is a **BLOCKING** finding.
 5. **Data model check**: if the diff adds or changes a table/schema and the
    project keeps an `ERD.md`, it must be updated in the same PR — a missing
    update is a **BLOCKING** finding.

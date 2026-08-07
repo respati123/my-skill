@@ -163,7 +163,11 @@ For each, the user answers yes/no:
   collection at `docs/postman/collection.json` — **recommend yes**: it costs
   nothing to scaffold now, and `review-pr` already treats a missing API
   doc update as BLOCKING once endpoints exist, so having the file ready
-  avoids friction on the very first backend PR:
+  avoids friction on the very first backend PR. The collection follows
+  the **Postman / API Docs Rules** at
+  `setup/references/rules/postman-rules.md` — every endpoint documented
+  with every case as a sub-request (positive, negative, auth, not-found,
+  conflict), each with a test script. Scaffold with the empty structure:
   ```json
   {
     "info": {

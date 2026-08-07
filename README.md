@@ -34,7 +34,7 @@ to **two places** in the host project:
   back at these.
 
 The coding rules (`coding-principles`, `backend-rules-typescript`,
-`frontend-rules-typescript`) live at
+`frontend-rules-typescript`, `postman-rules`) live at
 [`setup/references/rules/`](setup/references/rules/) — these are **reference
 documents the `coder` and `techlead` roles load**, not user-triggered skills.
 Edit a role → change it in `.agents/agents/`; the pristine copy in

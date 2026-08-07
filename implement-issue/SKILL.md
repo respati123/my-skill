@@ -88,11 +88,13 @@ show the live status.
    note anything extra you're tempted to fix, don't do it here.
 7. Add/update tests for what changed. Run the project's lint and test
    commands; fix failures before handing off.
-8. Added or changed an API endpoint? Update the project's API docs (e.g.
-   `docs/postman/`) in the same PR, with both a positive and a negative
-   example request. Added or changed a table/schema, and the project keeps
-   an `ERD.md`? Update it too. Both are BLOCKING findings in `techlead`'s
-   review if missed.
+8. Added or changed an API endpoint? Update the Postman collection at
+   `docs/postman/` in the same PR per **Postman / API Docs Rules**
+   (`setup/references/rules/postman-rules.md`) — every case (positive,
+   negative, auth, not-found, conflict) as a sub-request with test scripts.
+   Added or changed a table/schema, and the project keeps an `ERD.md`?
+   Update it too. Both are BLOCKING findings in `techlead`'s review if
+   missed.
 9. Commit, push, open a PR with `Closes #<sub-issue>` (the sub-issue, never
    the parent).
 10. Report: PR URL, branch, files changed, commands run and their results.

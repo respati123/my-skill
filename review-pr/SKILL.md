@@ -66,10 +66,11 @@ this ticket, or is absent, proceed.
    violation is **BLOCKING**; a stylistic call the skill doesn't actually
    pin down is not.
 4. **API docs check**: if the diff adds or changes an endpoint, the
-   project's API docs (e.g. `docs/postman/`) must be updated in the same
-   PR, with both a positive and a negative example request for the
-   affected endpoint — a missing doc update, or one with only the happy
-   path, is **BLOCKING**.
+   Postman collection at `docs/postman/` must be updated in the same PR
+   per **Postman / API Docs Rules** (`setup/references/rules/postman-rules.md`)
+   — every case as a sub-request, positive + negative + auth/not-found/conflict
+   where they apply, with test scripts. A missing doc update, or one with
+   only the happy path, is **BLOCKING**.
 5. **Data model check**: if the diff adds or changes a table/schema and
    the project keeps an `ERD.md`, it must be updated in the same PR — a
    missing update is **BLOCKING**.

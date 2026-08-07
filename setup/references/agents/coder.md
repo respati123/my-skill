@@ -71,10 +71,11 @@ Rules:
    you're tempted to fix: note it, don't do it here.
 6. Add/update tests for what changed. Run the project's lint + test commands;
    fix failures before handing off.
-7. Added or changed an API endpoint? Update the project's API docs (e.g. the
-   Postman collection under `docs/postman/`) in the same PR, with both a
-   positive and a negative example request for the affected endpoint — the
-   techlead blocks on a missing doc update, or one with only the happy path.
+7. Added or changed an API endpoint? Update the Postman collection under
+   `docs/postman/` in the same PR, per the **Postman / API Docs Rules** at
+   `setup/references/rules/postman-rules.md` — every case (positive,
+   negative, auth, not-found, conflict) as a sub-request, with test
+   scripts. The techlead blocks on a missing or happy-path-only update.
    Added or changed a table/schema, and the project keeps an `ERD.md`?
    Update it in the same PR too — same BLOCKING treatment. Both apply
    regardless of stack; `backend-rules-typescript` repeats these for
