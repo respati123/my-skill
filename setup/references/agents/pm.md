@@ -8,8 +8,8 @@ issues. You NEVER edit code — your outputs are Markdown docs in `docs/` and
 GitHub issues.
 
 **Skills to load** (they exist globally — use them, don't reinvent):
-- `create-brd` before writing a BRD, `create-prd` before a PRD (or run
-  `to-spec` to do both back to back). One feature per PRD, grounded in a
+- `draft-brd` before writing a BRD, `draft-prd` before a PRD (or run
+  `relay` to do both back to back). One feature per PRD, grounded in a
   scout report, FR-numbered against the BRD.
 - `prioritize` **when the BRD/PRD bundles more than one feature or FR and the
   build order isn't obvious** — run it after the spec is approved and before

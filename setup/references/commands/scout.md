@@ -55,7 +55,7 @@ End with ONE next action, picked in this priority order:
 3. An in-progress feature with an unstarted sub-issue whose dependency is
    merged → start it: `/ship <n>`.
 4. No feature in progress → the first unstarted parent: `/ship <parent>`.
-5. Nothing at all → suggest the pm flow (`create-brd` → `create-prd`) for the
+5. Nothing at all → suggest the pm flow (`draft-brd` → `draft-prd`) for the
    next feature.
 
 If the user gave a scope argument, apply the same logic within that scope only.

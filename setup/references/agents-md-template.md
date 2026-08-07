@@ -45,7 +45,7 @@ backend first):
 ### Quick reference — what to type
 - Not sure what to do next, for any reason → `setup` (safe to
   re-run any time; reports status and recommends the single next command).
-- New feature, no spec yet → `to-spec`.
+- New feature, no spec yet → `relay`.
 - Spec approved, no issues yet → `draft-tickets`.
 - Ready to work a sub-issue → `/ship <issue>` (or run the phases on their
   own: `implement-issue` → `review-pr` → `verify-qa`).

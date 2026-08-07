@@ -80,7 +80,7 @@ Rules:
    dependencies, interfaces, or construction techniques (new
    library/framework/datastore, a module boundary or service split, a public
    contract, a cross-cutting auth/error/migration approach), write an ADR with
-   the `create-adr` skill and include it in the **same PR** — the techlead
+   the `lexicon` skill and include it in the **same PR** — the techlead
    blocks on a significant decision shipped without one. Reversible, trivial,
    or self-contained choices get **no** ADR; don't manufacture them.
 9. Commit, push, open a PR with `Closes #<sub-issue>` (the sub-issue, never

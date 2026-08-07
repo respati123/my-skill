@@ -16,3 +16,8 @@ Thumbs.db
 
 # Claude Code / harness local state (project-local copies of global tools)
 .claude/settings.local.json
+
+# Kanban runtime data (SQLite projection is rebuilt from tickets/*.md)
+kanban/data/
+kanban/node_modules/
+kanban/dist/

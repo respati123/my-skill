@@ -49,12 +49,12 @@ from Step 1): skip recon — there's nothing to find. Backend = no,
 `docs/postman/` question doesn't apply.
 
 Ask **one optional question** before moving on: *"This project is empty —
-want to define it now with `to-spec` (BRD → PRD)? Recommended — coding
+want to define it now with `relay` (BRD → PRD)? Recommended — coding
 straight from an idea usually means redoing work once real requirements
 surface; a short interview now is cheaper than a rewrite later."*
 
-- **Yes** → stop here and delegate fully to the `to-spec` skill (its normal
-  `create-brd` → `create-prd` interview). Once it's done, the approved PRD is
+- **Yes** → stop here and delegate fully to the `relay` skill (its normal
+  `draft-brd` → `draft-prd` interview). Once it's done, the approved PRD is
   what fills AGENTS.md's Project map in Step 3 — grounded in the approved
   doc, not guessed; Stack still gets asked separately (Step 3), since the
   spec deliberately doesn't pin it down. This does **not** trigger the
@@ -91,18 +91,18 @@ For each, the user answers yes/no:
   blind. The
   **Development workflow** section is generic (doesn't depend on this
   project's code) and always gets filled in full. **Project map** comes from
-  Step 2's recon, or from the approved BRD/PRD if the empty-project `to-spec`
+  Step 2's recon, or from the approved BRD/PRD if the empty-project `relay`
   offer was accepted. **Stack** comes from Step 2's recon for an existing
   project, or from the tech-stack question below for a freshly-specced
   greenfield one — never from the BRD/PRD themselves, they're deliberately
   stack-agnostic. **Commands** stays `TODO` for an empty project regardless —
   there's no real toolchain yet, that only exists once `implement-issue`
   produces the first code. If genuinely nothing is known (no recon, declined
-  `to-spec`), leave the rest as `TODO` too instead of guessing. Already
+  `relay`), leave the rest as `TODO` too instead of guessing. Already
   exists → **merge**: add only missing sections, never delete or rewrite what
   the user wrote. Show the diff of what you're adding before writing.
 - **GitHub remote** missing, and the project now has a clear direction (an
-  existing project, or a greenfield one that just completed `to-spec`) → ask
+  existing project, or a greenfield one that just completed `relay`) → ask
   how to connect one, one question, three options — **recommend "create on
   GitHub"** unless the user already has a remote elsewhere: `draft-tickets`,
   `review-pr`, and `verify-qa`'s parent-closing check all depend on GitHub
@@ -113,11 +113,11 @@ For each, the user answers yes/no:
   - existing remote: ask the URL, then `git remote add origin <url>`
   - local-only for now: works, but disables `draft-tickets`/`implement-issue`/`review-pr`/`verify-qa` — only pick this if that's intended.
 
-  Still no direction (empty project, `to-spec` declined) → skip this
+  Still no direction (empty project, `relay` declined) → skip this
   question — there's nothing to connect a remote *for* yet. It'll come up
   naturally once `draft-tickets` needs `gh` and finds none configured.
 - **Tech stack** unknown, and it's a greenfield project that just completed
-  `to-spec` → ask directly, but don't ask blind: skim the approved BRD/PRD
+  `relay` → ask directly, but don't ask blind: skim the approved BRD/PRD
   for signals (kind of product, expected scale, integrations mentioned) and
   propose a stack that fits, with the one-line reasoning (e.g. "a CRUD-heavy
   internal tool, no unusual scale — a mainstream, well-supported
@@ -177,7 +177,7 @@ For each, the user answers yes/no:
   decision shipped without an ADR as BLOCKING, so having the folder and
   numbering convention ready avoids friction on the first significant PR.
   Unlike `docs/postman/` this isn't backend-gated — any project accrues
-  architectural decisions. Mirror the `docs/postman/` offer; the `create-adr`
+  architectural decisions. Mirror the `docs/postman/` offer; the `lexicon`
   skill writes real ADRs from there on.
 - **Design system (PRODUCT.md / DESIGN.md)** missing, and Step 2 (or the
   tech-stack question above) found/confirmed a frontend/UI surface → run
@@ -227,7 +227,7 @@ into `.agents/roles/`, **always overwriting** (these are pristine — they
 track this repo, not the user's customizations):
 
 - `scout.md` — read-only recon, feeds everyone
-- `pm.md` — BRD → PRD → parent issue + sub-issues (loads `to-spec`/`draft-tickets`)
+- `pm.md` — BRD → PRD → parent issue + sub-issues (loads `relay`/`draft-tickets`)
 - `coder.md` — one sub-issue → pushed PR (the only role that edits code)
 - `techlead.md` — static PR review, BLOCKING/LGTM, posted on the PR
 - `qa.md` — verify a PR by execution
@@ -281,7 +281,7 @@ them works; the shims are a convenience, not a requirement.
 
 ## Step 5 — Report
 
-A few lines: git state; whether `to-spec` was run for an empty project (and
+A few lines: git state; whether `relay` was run for an empty project (and
 the resulting BRD/PRD paths, if so); AGENTS.md/CLAUDE.md status;
 `docs/postman/`, `docs/adr/`, and PRODUCT.md/DESIGN.md status; the role
 roles' state — which `.agents/agents/*.md` were created vs. already present,
@@ -298,7 +298,7 @@ enough to land here can't be expected to pick the right item off a list:
   report **its** single recommendation instead of anything below.
 - No issues yet, but an approved spec exists in `docs/prd/` → recommend
   `draft-tickets`.
-- No spec yet → recommend `to-spec` (BRD → PRD; `create-brd`/`create-prd`
+- No spec yet → recommend `relay` (BRD → PRD; `draft-brd`/`draft-prd`
   are still available directly if only one is needed).
 
 Close with one line making the re-run behavior explicit: "not sure what to
