@@ -58,10 +58,11 @@ restructure instead of explaining it.
 ## API docs & data model sync
 
 Any API change (new or changed endpoint) → update the project's Postman
-collection in the same PR, with **both a positive and a negative** example
-request for the affected endpoint (not just the happy path). Any schema/
-table change → update `ERD.md` in the same PR. Both are BLOCKING findings in
-`techlead`'s review if missing — this isn't optional cleanup.
+collection in the same PR, following the **Postman / API Docs Rules** at
+`postman-rules.md` (every case as a sub-request, with test scripts — not
+just the happy path). Any schema/table change → update `ERD.md` in the same
+PR. Both are BLOCKING findings in `techlead`'s review if missing — this
+isn't optional cleanup.
 
 ## Linting & formatting
 
