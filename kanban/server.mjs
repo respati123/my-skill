@@ -81,6 +81,38 @@ function deleteTicket(id) {
   db.prepare('DELETE FROM tickets WHERE id = ?').run(id)
 }
 
+// ── Create a ticket file (the only creation path) ────────────────────────
+function createTicket({ type, slug, title, status = 'open', parent = null, labels = [] }) {
+  if (!VALID_TYPES.includes(type)) return { error: `invalid type: ${type}` }
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) return { error: `invalid slug: ${slug}` }
+
+  // next id = max existing + 1
+  const row = db.prepare('SELECT MAX(CAST(id AS INTEGER)) as max FROM tickets').get()
+  const id = String((row?.max || 0) + 1).padStart(4, '0')
+  const filename = `${id}-${type}-${slug}.md`
+  const filepath = path.join(TICKETS_DIR, filename)
+  if (fs.existsSync(filepath)) return { error: `file exists: ${filename}` }
+
+  const frontmatter = {
+    id,
+    type,
+    status,
+    parent,
+    labels: labels.length ? labels : undefined,
+    'github-url': null,
+  }
+  // remove keys with null/undefined values
+  for (const k of Object.keys(frontmatter)) {
+    if (frontmatter[k] == null) delete frontmatter[k]
+  }
+  const body = `# ${title || titleCase(slug)}\n`
+  fs.writeFileSync(filepath, matter.stringify(body, frontmatter), 'utf-8')
+  // watcher will reindex — return the parsed ticket
+  const t = parseTicketFile(filepath, filename)
+  if (t) upsertTicket(t)
+  return { ok: true, ticket: t }
+}
+
 // ── Full reindex ────────────────────────────────────────────────────────
 function reindexAll() {
   if (!fs.existsSync(TICKETS_DIR)) {
@@ -194,6 +226,13 @@ const server = http.createServer(async (req, res) => {
     const body = await readBody(req)
     const result = updateTicketStatus(patchMatch[1], body.status)
     return json(res, result.error ? 400 : 200, result)
+  }
+
+  // POST /api/tickets — create a new ticket file
+  if (req.method === 'POST' && url.pathname === '/api/tickets') {
+    const body = await readBody(req)
+    const result = createTicket(body)
+    return json(res, result.error ? 400 : 201, result)
   }
 
   // POST /api/reindex — force a full reindex

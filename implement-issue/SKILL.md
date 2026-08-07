@@ -32,15 +32,24 @@ show the live status.
    generates the shim for whatever harness is running.
 2. **On `READY`** — **write `tickets/.active`** with
    `{"ticket":"<id>","agent":"coder","started":"<ISO now>"}`, then
-   delegate to `coder` through your harness's subagent mechanism (Agent tool,
+   **move the ticket to `in-progress`**:
+   ```
+   node kanban/scripts/ticket-move.mjs <id> in-progress
+   ```
+   Then delegate to `coder` through your harness's subagent mechanism (Agent tool,
    `subagent` tool, …), foreground. Pass it the target sub-issue. **Run
    coder in a worktree** — it branches, commits, and pushes, so keep that
    off the main working tree. If your mechanism has an isolation flag (e.g.
    `isolation: "worktree"`), use it; otherwise set up the worktree yourself
    (`git worktree add`) and pass its path as the delegate's working
    directory.
-3. **On return** — **delete `tickets/.active`** (or set `agent: null`), so
-   the board clears the working indicator.
+3. **On return** — **move the ticket to `review`** (coder is done, handoff
+   to techlead):
+   ```
+   node kanban/scripts/ticket-move.mjs <id> review
+   ```
+   Then **delete `tickets/.active`** (or set `agent: null`), so the board
+   clears the working indicator.
 4. **On `NEEDS_RESTART` or no delegation tool available** — tell the user
    what's needed (restart to pick up the shim, or a subagent-capable tool)
    and stop; don't silently fall back to inline.

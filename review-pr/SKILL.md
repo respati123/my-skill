@@ -36,8 +36,15 @@ this ticket, or is absent, proceed.
    delegate to `techlead` through your harness's subagent mechanism (Agent
    tool, `subagent` tool, …), foreground. Pass it the PR number only — fresh
    context matters: don't hand it the implementer's reasoning, just the PR.
-3. **On return** — **delete `tickets/.active`** (or set `agent: null`), so
-   the board clears the working indicator.
+3. **On LGTM** — **move the ticket to `qa`** (review passed, handoff to qa):
+   ```
+   node kanban/scripts/ticket-move.mjs <id> qa
+   ```
+   Then **delete `tickets/.active`** (or set `agent: null`), so the board
+   clears the working indicator.
+   **On BLOCKING findings** — leave the ticket at `review` (it's not
+   done), delete `tickets/.active`. The ticket stays in the Review column
+   until the coder fixes it and re-review passes.
 4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context did **not** write the diff being reviewed
    (a review by the same context that wrote the code is not a review);

@@ -52,15 +52,33 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
    it.
 4. Propose the full breakdown (parent + sub-issue titles) to the user before
    creating anything.
-5. Report parent + sub-issue numbers and URLs.
-6. **Ask which sub-issue to start on** (`AskUserQuestion`, single-select):
-   list the ones that are actually ready — not blocked by another sub-issue
-   per the dependency order from step 2 — as options, with the first one in
-   dependency order (backend before the frontend sub-issue that depends on
-   it) labeled "(Recommended)". Once the user picks, load the `implement-issue`
-   skill for that sub-issue number right away — don't wait for a separate
-   go-ahead.
+5. **Create each ticket via the kanban API** — for each parent and sub-issue
+   in the breakdown, run:
+   ```
+   node kanban/scripts/ticket-create.mjs --type <type> --slug <slug> --title "<title>" --parent <parent-id> --labels <comma,separated>
+   ```
+   Map each ticket to its type: `feat` for feature work, `fix` for bugs,
+   `task` for generic items, `chore` for tooling/deps, `docs` for
+   documentation. The script creates the `.md` file in `tickets/` and the
+   file watcher syncs it to the board. Carry the FR-id into the title or slug
+   (e.g. `--slug fr2-1-login-endpoint`) so traceability from BRD → PRD →
+   ticket survives.
+6. Report the created ticket ids and offer to start `implement-issue` on the
+   first ready sub-issue (backend before frontend, per the dependency order
+   from step 2).
 
 Bugs/chores found outside a spec still go through the plain `/issue`
 command, not this skill — `draft-tickets` is specifically for spec-derived
 feature breakdowns.
+
+## Next
+
+Never end on "tickets created" and stop. Put the next step to the user —
+reply with one:
+
+1. **Lanjut — `/implement-issue`** (Recommended). Start coding the first
+   ready sub-issue (backend first, then frontend).
+2. **Diskusi / revisi** — adjust the breakdown; say what's off and I'll
+   edit the tickets via the API, then re-offer.
+3. **Berhenti** — leave here. Resume later with `/relay` (detects open
+   tickets and offers `implement-issue`), or run `/implement-issue` directly.

@@ -33,8 +33,14 @@ this ticket, or is absent, proceed.
    `{"ticket":"<id>","agent":"qa","started":"<ISO now>"}`, then
    delegate to `qa` through your harness's subagent mechanism (Agent tool,
    `subagent` tool, …), foreground. Pass it the PR number.
-3. **On return** — **delete `tickets/.active`** (or set `agent: null`), so
-   the board clears the working indicator.
+3. **On PASS** — **move the ticket to `done`** (pipeline complete):
+   ```
+   node kanban/scripts/ticket-move.mjs <id> done
+   ```
+   Then **delete `tickets/.active`** (or set `agent: null`), so the board
+   clears the working indicator.
+   **On FAIL** — leave the ticket at `qa`, delete `tickets/.active`. The
+   ticket stays in the QA column until the coder fixes the failing criteria.
 4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context is independent of the implementation and
    review (verification by the same context that wrote or approved the
