@@ -17,7 +17,11 @@ here — there are no dependencies on `~/.agents/skills/` or any external folder
 - `implement-issue/` — branch, code, PR for one sub-issue.
 - `review-pr/` — static PR review to LGTM.
 - `verify-qa/` — verify AC by executing the app; checklist to `docs/qa/`.
-- `relay/` — orchestrator; runs the chain, gating each handoff.
+- `relay/` — orchestrator; runs the spec chain (interrogate → draft-brd →
+  lexicon → draft-prd → draft-tickets), gating each handoff.
+- `ship/` — implementation orchestrator; drives a sub-issue end to end
+  (scout → code → PR → review → QA), gating at checkpoints. `relay` hands
+  off to `ship` once issues exist.
 - `setup/` — project readiness (git, `AGENTS.md`); installs roles from its
   `references/agents/` into the host project as **pristine templates**
   (`.agents/roles/`, the source-of-truth `role-installer` restores from) **and
@@ -46,8 +50,8 @@ here — there are no dependencies on `~/.agents/skills/` or any external folder
 ## The chain (all vendored in this repo)
 
 ```
-interrogate → draft-brd → lexicon → draft-prd
-                                      ↓ draft-tickets → implement-issue → review-pr → verify-qa
+interrogate → draft-brd → lexicon → draft-prd → draft-tickets
+                                                  ↓ ship → implement-issue → review-pr → verify-qa
 ```
 
 Every stage — pipeline (`draft-tickets`, `implement-issue`, `review-pr`,

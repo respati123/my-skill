@@ -2,8 +2,8 @@
 
 A fully self-contained chain of skills that carries a project from idea to green
 QA — `interrogate → draft-brd → lexicon → draft-prd → draft-tickets →
-implement-issue → review-pr → verify-qa` — with a runner (`relay`) that gates
-each handoff. **Every skill lives in this repo; there are no dependencies on
+ship → implement-issue → review-pr → verify-qa` — with two runners: `relay`
+(spec chain) and `ship` (implementation chain), each gating handoffs. **Every skill lives in this repo; there are no dependencies on
 `~/.agents/skills/` or any external folder.**
 
 ## All skills in this repo
@@ -18,7 +18,8 @@ each handoff. **Every skill lives in this repo; there are no dependencies on
 | `implement-issue` | Branch, code, PR for one sub-issue | branch + PR |
 | `review-pr` | Static PR review to LGTM | PR review |
 | `verify-qa` | Verify AC by executing the app | `docs/qa/<slug>-<date>.md` |
-| `relay` | Runs the whole chain, gating each handoff | — |
+| `relay` | Runs the spec chain, gating each handoff | — |
+| `ship` | Runs the implementation chain, gating at checkpoints | — |
 | `setup` | Project readiness: git, AGENTS.md, installs roles | `.agents/agents/*`, `AGENTS.md` |
 | `research` | Background domain research for sharp BRD questions | research notes |
 | `impeccable` | Design system; `draft-prd` calls its `shape` sub-skill | design brief |
