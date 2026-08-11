@@ -11,7 +11,7 @@ pipeline). This is the only phase allowed to modify code.
 GitHub calls below (`gh issue ...`, `gh label ...`): prefer the MCP GitHub
 tools when connected, otherwise run the `gh` command as written — mapping
 and exceptions (blocked-by check, anything local) in
-[docs/github-access.md](../../docs/github-access.md).
+[docs/github-access.md](../docs/github-access.md).
 
 ## Workflow
 

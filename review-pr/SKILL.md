@@ -12,7 +12,7 @@ too.
 
 GitHub calls below (`gh pr diff`, `gh pr review`): prefer the MCP GitHub
 tools when connected, otherwise run `gh` as written — mapping in
-[docs/github-access.md](../../docs/github-access.md).
+[docs/github-access.md](../docs/github-access.md).
 
 ## Workflow
 

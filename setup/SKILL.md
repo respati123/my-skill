@@ -28,7 +28,7 @@ the tradeoffs to answer correctly.
 GitHub calls in this skill (`gh label`, `gh issue list`, `gh api
 .../sub_issues`): prefer the MCP GitHub tools when connected, otherwise run
 `gh` as written — mapping and exceptions in
-[docs/github-access.md](../../docs/github-access.md).
+[docs/github-access.md](../docs/github-access.md).
 
 ## Step 1 — Git
 
@@ -304,16 +304,18 @@ enough to land here can't be expected to pick the right item off a list:
   same gather-and-recommend logic as `/scout` (`prompts/scout.md`) and
   report **its** single recommendation instead of anything below.
 - No issues yet, but an approved spec exists in `docs/prd/` → recommend
-  `draft-tickets`. After `draft-tickets` creates local tickets, **offer to
-  start the kanban board**:
-  ```
-  cd kanban && node server.mjs &
-  ```
-  then open `http://localhost:3211` — or in dev, `cd kanban && pnpm dev`.
-  Say it in one line so the user can see their tickets on a visual board as
-  they move through the pipeline.
+  `draft-tickets`.
 - No spec yet → recommend `relay` (BRD → PRD; `draft-brd`/`draft-prd`
   are still available directly if only one is needed).
+
+**Offer to start the kanban board** whenever tickets exist (after
+`draft-tickets`, or if resuming a project that already has
+`tickets/*.md`) — one line, with the command:
+```
+cd kanban && node server.mjs &
+```
+then open `http://localhost:3211` (or in dev, `cd kanban && pnpm dev`).
+Skip if no tickets exist yet — there's nothing to visualize.
 
 Close with one line making the re-run behavior explicit: "not sure what to
 do later either — just say `setup` again."
