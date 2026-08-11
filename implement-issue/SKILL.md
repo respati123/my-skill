@@ -99,3 +99,18 @@ show the live status.
    the parent).
 10. Report: PR URL, branch, files changed, commands run and their results.
     Never merge.
+
+## Next
+
+Don't stop at "PR opened." Put the next step to the user — reply with one:
+
+1. **Lanjut — `/review-pr`** (Recommended). Hand the PR to the techlead role
+   for static review (BLOCKING findings or LGTM).
+2. **Diskusi** — something's off with the implementation; say what and I'll
+   iterate on the same branch.
+3. **Berhenti** — leave here. Resume later with `/relay` (detects the open
+   PR and offers `review-pr`), or run `/review-pr` directly on the PR.
+
+**Status transition already done:** `ticket-move.mjs <id> review` moved the
+sub-issue to the Review column when you opened the PR. The board reflects
+where it is.

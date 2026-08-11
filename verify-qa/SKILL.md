@@ -92,3 +92,23 @@ this ticket, or is absent, proceed.
    manual, human step (same gate `/ship`'s final checkpoint uses) — don't
    label or close the parent yourself. If sub-issues are still open, just
    note how many remain; no action needed.
+
+## Next
+
+Never end on "QA done" and stop. Put the next step to the user — reply
+with one:
+
+1. **PASS → Lanjut — next sub-issue** (Recommended). This one's green; start
+   `/implement-issue` on the next ready sub-issue (backend before frontend).
+   If this was the **last** sub-issue for its parent, the parent is done —
+   remind the user to close it (manual step, see step 7).
+2. **FAIL → Lanjut — `/implement-issue`**. Send the failing criteria back to
+   the `coder` role to fix on the same branch, then re-run QA.
+3. **Diskusi** — a criterion is ambiguous or UNVERIFIED; say which and I'll
+   re-check against the PRD.
+4. **Berhenti** — leave here. Resume later with `/relay` (detects the QA
+   verdict and routes accordingly), or start `/implement-issue` on the next
+   sub-issue directly.
+
+**Status transition:** on PASS, `ticket-move.mjs <id> done` moved the
+sub-issue to Done. The board reflects the green QA.

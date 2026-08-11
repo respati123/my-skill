@@ -109,3 +109,19 @@ back to whoever's implementing, not fixed here.
   branch, then re-review, or (2) leave it for the user to fix manually. Only
   spawn `coder` on explicit choice (1) — never fix the findings yourself or
   assume the answer.
+
+## Next
+
+Never end on "review posted" and stop. Put the next step to the user —
+reply with one:
+
+1. **LGTM → Lanjut — `/verify-qa`** (Recommended). The static review passed;
+   hand it to QA to verify the acceptance criteria by execution. Moves the
+   sub-issue to the QA column (`ticket-move.mjs <id> qa`).
+2. **BLOCKING → Lanjut — `/implement-issue`**. Send the findings back to the
+   `coder` role to fix on the same branch, then re-review.
+3. **Diskusi** — disagreement with a finding; say which one and I'll
+   reconsider.
+4. **Berhenti** — leave here. Resume later with `/relay` (detects the PR
+   state and routes to the right stage), or run `/verify-qa` directly on an
+   approved PR.

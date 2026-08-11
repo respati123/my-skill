@@ -77,3 +77,20 @@ Blocking review findings and failed QA are normal, not exceptional. Go back to `
 At green QA. Report that the PR is ready to merge, and exit.
 
 Merging and deploying stay outside relay and outside this conversation's momentum. Everything relay runs is local or reversible: nothing reaches main, nothing reaches a user. Ending here keeps it that way.
+
+## Next
+
+When relay exits (green QA, or a gate failure that needs a human call):
+
+1. **Green QA — Lanjut — next feature.** The PR is ready to merge. If there's
+   another feature in the BRD with an un-started PRD, loop back to `/relay`
+   (it'll route to `draft-prd` for the next one). If this was the last feature,
+   the project is ready to ship — remind the user that **merging is manual**
+   (relay never merges).
+2. **Gate failure (twice on the same stage) — Diskusi.** Don't grind on a
+   broken spec. Revise the PRD or BRD (say which downstream artifacts go
+   stale), then re-run forward from the changed stage.
+3. **Spec gap surfaced mid-pipeline — Berhenti.** Sometimes a stage reveals
+   the spec itself is missing a decision. Stop, record the open question,
+   resume with `/interrogate` to capture the decision, then `/relay` to
+   continue.
