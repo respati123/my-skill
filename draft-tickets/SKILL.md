@@ -42,6 +42,15 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
    carry the FR-id into the body, so the BRD → PRD → issue → PR chain stays
    queryable end to end — the traceability dies the moment an issue has no
    FR-id to point back at.
+
+   **Read `docs/architecture.md` first** (Status: Confirmed) — it decides
+   the split. A monorepo with one backend + one frontend splits 2 ways; a
+   microservices project splits per service; a mobile-inclusive project adds
+   a mobile sub-issue. The stack also names the infra the backend sub-issue
+   must wire (Redis, queue, WebSocket) — pull those from the architecture
+   doc's infra list, don't re-derive them from the PRD. If no
+   `architecture.md` exists, stop and run `/stack` first — ticket breakdown
+   without a confirmed stack guesses at the split.
 3. Follow `prompts/issue.md`'s body templates, label conventions, and
    creation steps exactly: ensure labels exist, create parent then
    sub-issues, link every sub-issue via the sub-issues API, **verify the

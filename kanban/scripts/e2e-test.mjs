@@ -297,7 +297,7 @@ function testStructure() {
   // F7. every pipeline-stage skill has a ## Next block
   //     (the 4 stage-skills + relay + interrogate/draft-brd/lexicon/draft-prd)
   //     setup/research/impeccable are NOT pipeline stages (one-shot/helper/design) — exempt
-  const stagesWithNext = ['interrogate', 'draft-brd', 'lexicon', 'draft-prd', 'draft-tickets', 'implement-issue', 'review-pr', 'verify-qa', 'relay', 'ship']
+  const stagesWithNext = ['interrogate', 'draft-brd', 'lexicon', 'draft-prd', 'stack', 'draft-tickets', 'implement-issue', 'review-pr', 'verify-qa', 'relay', 'ship']
   for (const s of stagesWithNext) {
     const fm = fs.readFileSync(path.join(ROOT, s, 'SKILL.md'), 'utf-8')
     assert(/## Next/i.test(fm), `${s}/SKILL.md has ## Next block`)

@@ -1,9 +1,10 @@
 # Spec-driven dev skills
 
 A fully self-contained chain of skills that carries a project from idea to green
-QA — `interrogate → draft-brd → lexicon → draft-prd → draft-tickets →
-ship → implement-issue → review-pr → verify-qa` — with two runners: `relay`
-(spec chain) and `ship` (implementation chain), each gating handoffs. **Every skill lives in this repo; there are no dependencies on
+QA — `interrogate → draft-brd → lexicon → draft-prd → stack →
+draft-tickets → ship → implement-issue → review-pr → verify-qa` — with two
+runners: `relay` (spec+stack chain) and `ship` (implementation chain), each
+gating handoffs. **Every skill lives in this repo; there are no dependencies on
 `~/.agents/skills/` or any external folder.**
 
 ## All skills in this repo
@@ -14,6 +15,7 @@ ship → implement-issue → review-pr → verify-qa` — with two runners: `rel
 | `draft-brd` | Turns decisions into a stakeholder-approved BRD | `docs/brd/<slug>.md` (`Status: Approved`) |
 | `lexicon` | Locks domain vocabulary, model, and ADRs | `CONTEXT.md` + `## Model` (`model-version`), `docs/adr/` |
 | `draft-prd` | One PRD per BRD feature — user flows, UX, AC | `docs/prd/<slug>.md` |
+| `stack` | Grills the tech-stack decision tree (topology→backend→frontend→mobile), PRD-driven | `docs/architecture.md` (`Status: Confirmed`) |
 | `draft-tickets` | Breaks a PRD into GitHub parent + sub-issues | parent issue + sub-issues |
 | `implement-issue` | Branch, code, PR for one sub-issue | branch + PR |
 | `review-pr` | Static PR review to LGTM | PR review |

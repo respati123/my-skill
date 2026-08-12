@@ -22,7 +22,8 @@ Work out the current stage from the filesystem, every single time. Never assume 
 | decision record `confirmed`, no BRD | `draft-brd` |
 | BRD `Status: Approved`, no `CONTEXT.md` | `lexicon` |
 | `CONTEXT.md`, fewer PRDs than the BRD's `## Features` list | `draft-prd` |
-| every feature has a PRD, no GitHub issues | `draft-tickets` |
+| every feature has a PRD, no `docs/architecture.md` (Status: Confirmed) | `stack` |
+| `architecture.md` Confirmed, no GitHub issues | `draft-tickets` |
 | open sub-issues, none in progress | `implement-issue` |
 | PR open, unreviewed | `review-pr` |
 | review LGTM, not verified | `verify-qa` |
@@ -53,7 +54,8 @@ Then run the chosen stage by invoking its skill. Don't summarise or paraphrase w
 | 2 | `draft-brd` | `docs/brd/<slug>.md` (`Status: Approved`) |
 | 3 | `lexicon` | `CONTEXT.md` + `## Model` (with `model-version`), `docs/adr/` |
 | 4 | `draft-prd` | `docs/prd/<slug>.md` — **once per feature**; Design field is a hard gate (link an `impeccable shape` brief or write `N/A — backend-only`) |
-| 5 | `draft-tickets` | parent issue + sub-issues (each titled with its FR-id; each carrying `## Parent: #<n>`) |
+| 5 | `stack` | `docs/architecture.md` (`Status: Confirmed`) — grilled once per project, applies to all features |
+| 6 | `draft-tickets` | parent issue + sub-issues (each titled with its FR-id; each carrying `## Parent: #<n>`) |
 | 6 | `implement-issue` | branch, code, PR — **once per sub-issue, in dependency order** |
 | 7 | `review-pr` | review to LGTM |
 | 8 | `verify-qa` | acceptance criteria verified against the running app; checklist saved to `docs/qa/<slug>-<date>.md` |

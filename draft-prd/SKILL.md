@@ -83,8 +83,9 @@ Save to `docs/prd/<slug>.md` — same base slug as the BRD, plus the feature nam
 
 Never end on "saved" and stop. Once the PRD lands, put the next step to the user — reply with one:
 
-1. **Lanjut — next PRD, or `/draft-tickets`** (Recommended). If features remain in the BRD's `## Features` list without a PRD, draft the next one (`/draft-prd`). If every feature has a PRD, break them into issues with `/draft-tickets`.
-2. **Diskusi / revisi** — refine this PRD first; say what's off and I'll edit in place, then re-offer.
-3. **Berhenti** — leave here. Resume later with `/relay` (detects how many PRDs exist vs the BRD's feature count and offers the next step), or run `/draft-tickets` directly.
+1. **Lanjut — `/stack`** (Recommended). Every feature now has a PRD — pin the tech stack next (topology → backend → frontend → mobile, driven by what the PRDs require). Once the stack is confirmed in `docs/architecture.md`, proceed to `/draft-tickets`. If `docs/architecture.md` already exists (`Status: Confirmed`), skip straight to `/draft-tickets`.
+2. **Lanjut — next PRD** if features remain in the BRD's `## Features` list without a PRD. Draft the next one (`/draft-prd`) before stack/tickets — the stack grill reads all PRDs for infra signals.
+3. **Diskusi / revisi** — refine this PRD first; say what's off and I'll edit in place, then re-offer.
+4. **Berhenti** — leave here. Resume later with `/relay` (detects how many PRDs exist vs the BRD's feature count and offers the next step), or run `/stack` directly.
 
 Mid-discussion, keep discussing — don't force the menu. Offer it again only when the discussion lands or the PRD is updated.

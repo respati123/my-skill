@@ -13,12 +13,18 @@ here — there are no dependencies on `~/.agents/skills/` or any external folder
   `docs/adr/`.
 - `draft-prd/` — Product Requirements Document (one per BRD feature). Produces
   `docs/prd/<slug>.md`.
+- `stack/` — grills the tech-stack decision tree (topology → deployment →
+  backend → frontend → mobile), driven by BRD/PRD signals. Produces
+  `docs/architecture.md` (`Status: Confirmed`). Sits between `draft-prd` and
+  `draft-tickets`; loads per-stack reference docs from
+  `setup/references/architecture/`.
 - `draft-tickets/` — breaks a PRD into GitHub parent + sub-issues.
 - `implement-issue/` — branch, code, PR for one sub-issue.
 - `review-pr/` — static PR review to LGTM.
 - `verify-qa/` — verify AC by executing the app; checklist to `docs/qa/`.
-- `relay/` — orchestrator; runs the spec chain (interrogate → draft-brd →
-  lexicon → draft-prd → draft-tickets), gating each handoff.
+- `relay/` — orchestrator; runs the spec+stack chain (interrogate →
+  draft-brd → lexicon → draft-prd → stack → draft-tickets), gating each
+  handoff.
 - `ship/` — implementation orchestrator; drives a sub-issue end to end
   (scout → code → PR → review → QA), gating at checkpoints. `relay` hands
   off to `ship` once issues exist.
@@ -50,8 +56,8 @@ here — there are no dependencies on `~/.agents/skills/` or any external folder
 ## The chain (all vendored in this repo)
 
 ```
-interrogate → draft-brd → lexicon → draft-prd → draft-tickets
-                                                  ↓ ship → implement-issue → review-pr → verify-qa
+interrogate → draft-brd → lexicon → draft-prd → stack → draft-tickets
+                                                    ↓ ship → implement-issue → review-pr → verify-qa
 ```
 
 Every stage — pipeline (`draft-tickets`, `implement-issue`, `review-pr`,
