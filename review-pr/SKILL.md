@@ -43,8 +43,10 @@ this ticket, or is absent, proceed.
    Then **delete `tickets/.active`** (or set `agent: null`), so the board
    clears the working indicator.
    **On BLOCKING findings** — leave the ticket at `review` (it's not
-   done), delete `tickets/.active`. The ticket stays in the Review column
-   until the coder fixes it and re-review passes.
+   done), delete `tickets/.active`. The ticket stays in the Review column.
+   When the fix comes back from `coder` and re-review passes, re-acquire
+   `.active` as techlead and move to `qa`; if re-review finds more blocking
+   issues, send back to `coder` again. Max 3 rounds total before stopping.
 4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context did **not** write the diff being reviewed
    (a review by the same context that wrote the code is not a review);
@@ -98,17 +100,24 @@ this ticket, or is absent, proceed.
 Review statically — don't run the app (that's `verify-qa`, and it runs after
 this passes) and never edit code (neither this skill nor `techlead` ever
 does — a fix, if any, is always a separate delegation). Blocking findings go
-back to whoever's implementing, not fixed here.
+back to **`coder`** (the same role that wrote the diff, fresh context), not
+fixed here.
 
 ## After the review
 
 - **LGTM** → done, nothing further to do.
-- **BLOCKING findings** → don't just post and stop. Summarize the findings,
-  then ask the user (`AskUserQuestion`, single-select) how they want to
-  proceed: (1) delegate to the `coder` role/subagent to fix them on the same
-  branch, then re-review, or (2) leave it for the user to fix manually. Only
-  spawn `coder` on explicit choice (1) — never fix the findings yourself or
-  assume the answer.
+- **BLOCKING findings** → **delegate the fix back to the `coder` role**
+  (re-spawn it as a subagent with fresh context, same branch). Hand it the
+  findings list verbatim, tell it to fix each on the same branch, push, and
+  return. Then **re-review with a fresh `techlead`**. **Never fix the
+  findings inline in this context** — the agent running this skill is the
+  reviewer, not the coder; fixing inline merges two roles that must stay
+  separate (a review by the same context that then fixes is not a review).
+  This is not a choice for the user to delegate-vs-fix-manually: the default
+  path is always "send back to coder, re-review". Only offer "fix manually" as
+  an explicit user override when the user says they want to do it themselves
+  — and even then, **you** (this agent) don't edit the code; you hand the
+  findings to the user and stop.
 
 ## Next
 

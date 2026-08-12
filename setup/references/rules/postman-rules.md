@@ -76,25 +76,108 @@ docs/postman/
 └── collection.json
 ```
 
-The collection is organized by **resource**, not by case:
+The collection is organized by **resource** (folder), with each case as a
+sub-item. Below is a **concrete, working example** — copied from a real
+project's `docs/postman/collection.json` — showing the exact shape the coder
+should produce: `{{baseUrl}}` variable, concrete request body (not
+placeholders), and a `pm.test(...)` test script on every request so the
+collection is runnable as a regression suite.
 
 ```json
 {
-  "info": { "name": "Project API" },
+  "info": {
+    "name": "Project API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" }
+  ],
   "item": [
     {
-      "name": "Orders",
+      "name": "Auth",
       "item": [
-        { "name": "Create — valid",     "request": { ... } },
-        { "name": "Create — missing field", "request": { ... } },
-        { "name": "Create — duplicate",  "request": { ... } },
-        { "name": "Get — exists",       "request": { ... } },
-        { "name": "Get — not found",    "request": { ... } }
+        {
+          "name": "Signup — valid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/signup", "host": ["{{baseUrl}}"], "path": ["auth", "signup"] },
+            "body": { "mode": "raw", "raw": "{\"companyName\":\"Acme Corp\",\"adminName\":\"Ada Admin\",\"adminEmail\":\"ada@acme.com\",\"password\":\"password123\"}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('returns 201', () => pm.response.to.have.status(201));",
+                "pm.test('success envelope', () => { const b = pm.response.json(); pm.expect(b.status).to.eql('success'); });",
+                "pm.test('has tenant, user, session', () => { const b = pm.response.json().data; pm.expect(b.tenant.id).to.match(/^[0-9a-f-]{36}$/); pm.expect(b.user.role).to.eql('TENANT_ADMIN'); pm.expect(b.session.token.length).to.be.greaterThan(20); });"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Signup — duplicate email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/signup", "host": ["{{baseUrl}}"], "path": ["auth", "signup"] },
+            "body": { "mode": "raw", "raw": "{\"companyName\":\"Acme Corp\",\"adminName\":\"Ada Admin\",\"adminEmail\":\"ada@acme.com\",\"password\":\"password123\"}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('returns 409', () => pm.response.to.have.status(409));",
+                "pm.test('error envelope', () => { const b = pm.response.json(); pm.expect(b.status).to.eql('error'); pm.expect(b.error.message).to.include('already exists'); });"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Signup — missing required field",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/signup", "host": ["{{baseUrl}}"], "path": ["auth", "signup"] },
+            "body": { "mode": "raw", "raw": "{\"companyName\":\"Acme Corp\"}" }
+          },
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('returns 422', () => pm.response.to.have.status(422));",
+                "pm.test('error names the missing field', () => { const b = pm.response.json(); pm.expect(b.error.message).to.include('adminName'); });"
+              ]
+            }
+          }]
+        }
       ]
     }
   ]
 }
 ```
+
+### What to copy from this example
+
+- **`{{baseUrl}}` variable** — never hardcode `localhost:3000` in a URL;
+  define it once in `variable[]` and reference it everywhere.
+- **Concrete request body** — real values (`"Acme Corp"`), not
+  `{{placeholder}}` for required business fields. Auth tokens via
+  `{{token}}` is fine; required data must be literal so the request is
+  runnable as-is.
+- **A test script on EVERY request** (`event[].listen: "test"`) — assert
+  status code + response envelope shape + key fields. A request without a
+  test script is documentation; with one, it's a regression check.
+- **Response envelope consistency** — this project uses
+  `{status, data}` on success and `{status, error}` on failure. Match
+  whatever envelope the backend actually returns; the test scripts enforce
+  it.
+- **One case per sub-item, named for the case** — `"Signup — valid"`,
+  `"Signup — duplicate email"`, `"Signup — missing required field"`. The
+  name says what the case tests, not just the method + path.
 
 Resource folder → cases as sub-items. The name says the case, not just the
 method + path repeated.
