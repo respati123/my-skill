@@ -7,7 +7,7 @@ description: Break an approved BRD/PRD into a GitHub parent issue + sub-issues, 
 
 The pm role's ticket-creation phase: turns an approved spec into GitHub
 issues. Uses the exact same conventions as the `/issue` command — read
-`prompts/issue.md` for the full body templates, label rules, and native
+`setup/references/commands/issue.md` for the full body templates, label rules, and native
 sub-issue linking steps, and follow them exactly. The only difference here is
 where the content comes from.
 
@@ -36,7 +36,7 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
 2. Derive the breakdown from the PRD's FR numbering: one **parent issue**
    (feature-level acceptance criteria, from the PRD's scope) plus
    **sub-issues** per implementable part (backend first, then frontend) —
-   same split rule as `prompts/issue.md`: at minimum one backend + one
+   same split rule as `setup/references/commands/issue.md`: at minimum one backend + one
    frontend sub-issue, more only if genuinely atomic. **Title each
    sub-issue with its FR-id** (e.g. `FR-2.1 — create order endpoint`) and
    carry the FR-id into the body, so the BRD → PRD → issue → PR chain stays
@@ -51,13 +51,13 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
    doc's infra list, don't re-derive them from the PRD. If no
    `architecture.md` exists, stop and run `/stack` first — ticket breakdown
    without a confirmed stack guesses at the split.
-3. Follow `prompts/issue.md`'s body templates, label conventions, and
+3. Follow `setup/references/commands/issue.md`'s body templates, label conventions, and
    creation steps exactly: ensure labels exist, create parent then
    sub-issues, link every sub-issue via the sub-issues API, **verify the
    link worked**, no status label on creation. **Every sub-issue body must
    carry a `## Parent: #<n>` line** pointing at the parent issue — `implement-issue`
    reads it for feature-level context, so a missing `## Parent` breaks that
-   silently. Don't rely on `prompts/issue.md` to remember it; this skill owns
+   silently. Don't rely on `setup/references/commands/issue.md` to remember it; this skill owns
    it.
 4. Propose the full breakdown (parent + sub-issue titles) to the user before
    creating anything.

@@ -73,12 +73,16 @@ this ticket, or is absent, proceed.
    CI configured); otherwise **FAIL** with the failing criteria/CI check
    listed. Never fix code yourself.
 
-   **Invoked standalone (not via `ship`)**: on FAIL, don't just report and
-   stop — ask the user (`AskUserQuestion`, single-select) how to proceed:
-   (1) delegate to the `coder` role/subagent to fix the failing criteria on
-   the same PR branch, then re-run `verify-qa`, or (2) leave it for the user to
-   fix manually. Only spawn `coder` on explicit choice (1) — never fix the
-   findings yourself or assume the answer.
+   **Invoked standalone (not via `ship`)**: on FAIL, **delegate the fix back
+   to the `coder` role** (re-spawn, fresh context, same PR branch). Hand it the
+   failing criteria + evidence verbatim, tell it to fix on the same branch,
+   push, and return. Then re-run `verify-qa`. **Never fix the findings inline
+   in this context** — the agent running this skill is the QA verifier, not
+   the coder; fixing inline merges two roles that must stay separate, and the
+   QA agent isn't loading the coder's coding rules. "Fix manually" is only an
+   explicit user override when the user says they want to do it themselves —
+   and even then, **you** (this agent) don't edit the code; you hand the
+   findings to the user and stop.
 7. On **PASS**: check whether this was the last sub-issue for its parent.
    Read the parent number from this issue's `## Parent` line, then list the
    parent's sub-issues and their state:

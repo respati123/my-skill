@@ -117,7 +117,7 @@ Use the sub-issue/task template without the Parent section.
 Every issue moves: *(no label)* → `in-progress` → `done`.
 - `in-progress` is added when implementation starts on the issue (the parent gets it when its first sub-issue starts).
 - `done` replaces it when QA passes (the parent when all sub-issues are done).
-- The `/ship` orchestrator manages these transitions automatically; apply them manually (`gh issue edit <n> --add-label ...`) only when working outside `/ship`.
+- The `ship` skill manages these transitions automatically; apply them manually (`gh issue edit <n> --add-label ...`) only when working outside the `ship` pipeline.
 - New issues are created with **no status label** — unstarted work is whatever has neither.
 
 ## Create
@@ -142,7 +142,7 @@ Every issue moves: *(no label)* → `in-progress` → `done`.
    ```
    (Use `gh repo view --json owner,name` if owner/repo aren't known.)
 
-   - **Already has a different parent** (e.g. resuming a `/ship` run that got
+   - **Already has a different parent** (e.g. resuming a `ship` run that got
      interrupted after a partial link) → the call 422s. Retry once with
      `-F replace_parent=true` rather than treating it as a failure.
    - **Secondary rate limiting**: GitHub explicitly warns that creating

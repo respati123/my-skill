@@ -51,11 +51,13 @@ End with ONE next action, picked in this priority order:
 
 1. A `done` sub-issue with its PR still open → **ask the user to merge it**
    (it blocks everything behind it).
-2. A sub-issue `in-progress` → resume it: `/ship <n>`.
+2. A sub-issue `in-progress` → resume it: say "ship <n>" (triggers the
+   `ship` skill, which resumes the in-progress sub-issue).
 3. An in-progress feature with an unstarted sub-issue whose dependency is
-   merged → start it: `/ship <n>`.
-4. No feature in progress → the first unstarted parent: `/ship <parent>`.
-5. Nothing at all → suggest the pm flow (`draft-brd` → `draft-prd`) for the
-   next feature.
+   merged → start it: say "ship <n>" for the next ready sub-issue.
+4. No feature in progress → the first unstarted parent: say "ship <parent>".
+5. Nothing at all → suggest the pm flow (`draft-brd` → `draft-prd` →
+   `stack` → `draft-tickets`) for the next feature, or run `relay` to
+   pick up the chain where it left off.
 
 If the user gave a scope argument, apply the same logic within that scope only.
