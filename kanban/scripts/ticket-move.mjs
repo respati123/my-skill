@@ -9,7 +9,8 @@
  * The server rewrites the .md frontmatter; this script is a thin CLI wrapper.
  * Used by skills at pipeline transitions:
  *   coder done      → ticket-move.mjs <id> review
- *   techlead LGTM   → ticket-move.mjs <id> qa
+ *   techlead LGTM   → (stays at review; user merges manually)
+ *   qa starts       → ticket-move.mjs <id> qa   (post-merge)
  *   qa PASS         → ticket-move.mjs <id> done
  */
 

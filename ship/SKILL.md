@@ -69,48 +69,62 @@ Pick the next sub-issue in dependency order (backend first, per
 
 - Delegate to **`/review-pr`** with the PR URL (from `implement-issue`'s
   output). It runs a static review with fresh context, verdict BLOCKING or
-  LGTM, and moves the ticket to `qa` on LGTM.
+  LGTM. On LGTM it tells the user to **merge the PR manually** (techlead
+  approval is the green light for merge — review is done, QA runs
+  post-merge, not pre-merge).
 - **BLOCKING** → hand findings back to `/implement-issue` to fix on the same
   branch, then re-run `/review-pr`. Max **3 rounds**; if still blocked,
   **STOP** and report what remains. [CHECKPOINT]
 - LGTM → continue.
 
-## Step 4 — QA  (auto, after LGTM)
+## Step 4 — Merge  [CHECKPOINT 2]
+
+- **Techlead LGTM is the green light for merge.** The user merges the PR
+  manually (`gh pr merge` / GitHub UI) — never auto-merged by the skill.
+  This is the moment for the user's own self-review of the diff before it
+  hits main.
+- **STOP. Wait for the user to confirm the PR is merged.** QA runs
+  post-merge, so it cannot start until the merge lands. Once the user
+  confirms (or `gh pr view <PR> --json state --jq .state` returns
+  `MERGED`), continue.
+- Do not advance until merged — QA on an unmerged branch tests the wrong
+  thing.
+
+## Step 5 — QA  (auto, post-merge)
 
 - Delegate to **`/verify-qa`**: verify every acceptance criterion by
-  execution on the PR branch. FAIL → back to `/implement-issue` (counts
-  toward the same 3-round cap), then re-run QA. PASS → continue.
+  execution on **`main`** (the merged code, not a feature branch). FAIL →
+  the fix is a **new PR** (main is already merged — fix forward, don't
+  revert unless the bug is destructive). Delegate to `/implement-issue`
+  for a fix sub-issue, then re-run QA on the new merge. PASS → continue.
 
-## Step 5 — Sub-issue done  [CHECKPOINT 2]
+## Step 6 — Sub-issue done  [CHECKPOINT 3]
 
 - Move it: `node kanban/scripts/ticket-move.mjs <id> done`.
-- Present: PR URL, review rounds used, QA checklist — including CI status and
-  any FLAKY tests `verify-qa` flagged. A FLAKY report doesn't block merging
-  by itself, but the user merging manually should see it, not just a bare
-  PASS.
-- **STOP. Ask the user to merge the PR manually** (merging closes the
-  sub-issue via `Closes`). Once merged, loop back to Step 2 for the next
-  sub-issue.
+- Present: PR URL (merged), review rounds used, QA checklist — including CI
+  status and any FLAKY tests `verify-qa` flagged.
+- Loop back to Step 2 for the next sub-issue.
 
-## Step 6 — Feature done  [FINAL CHECKPOINT]
+## Step 7 — Feature done  [FINAL CHECKPOINT]
 
 When every sub-issue is `done`:
 
 - Move the parent: `node kanban/scripts/ticket-move.mjs <parent> done`.
-- Present the summary — all PR URLs, total review rounds, non-blocking notes
-  left over.
+- Present the summary — all PR URLs (merged), total review rounds, non-blocking
+  notes left over.
 - **STOP.** The parent issue is closed manually by the user. Say it
   explicitly: "All sub-issues are done. Close the parent #<n> manually."
 
 ## Checkpoints — where ship stops
 
-Ship pauses at exactly three points, never elsewhere:
+Ship pauses at exactly four points, never elsewhere:
 
 1. **After planning** (Step 1) — confirm the breakdown before creating
    anything.
-2. **Sub-issue done** (Step 5) — present the PR + QA result, ask the user to
-   merge manually.
-3. **Feature done** (Step 6) — present the summary, ask the user to close the
+2. **Merge** (Step 4) — techlead LGTM'd; the user merges manually for
+   self-review. QA waits.
+3. **Sub-issue done** (Step 6) — present the merged PR + QA result.
+4. **Feature done** (Step 7) — present the summary, ask the user to close the
    parent.
 
 Everything between is automatic delegation. If a skill fails twice at the

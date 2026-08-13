@@ -63,7 +63,11 @@ same order.
 
 ## What stays manual regardless of mode
 
-- **Merging a PR** — `ship` and the pipeline skills never merge. The user
-  merges manually after QA passes.
+- **Merging a PR** — `ship` and the pipeline skills never auto-merge. The
+  **techlead's LGTM is the merge signal**: once review passes, the user
+  merges manually (it's the user's self-review checkpoint). QA runs
+  **post-merge**, on `main` — so merge has to land before `verify-qa` can
+  start. This ordering matters: QA on an unmerged feature branch tests the
+  wrong thing.
 - **Closing a parent issue** — GitHub doesn't auto-close a parent when its
   sub-issues close. The user closes it manually.

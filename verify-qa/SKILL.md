@@ -1,6 +1,6 @@
 ---
 name: verify-qa
-description: Verify a PR's acceptance criteria by executing the app, not by reading code — runs after review-pr's LGTM. Trigger on "verify-qa", "qa this PR", "verify this PR".
+description: Verify a merged PR's acceptance criteria by executing the app on main, not by reading code — runs POST-MERGE (after techlead LGTM + manual merge), not pre-merge. Trigger on "verify-qa", "qa this PR", "verify this PR".
 ---
 
 # verify-qa
@@ -29,7 +29,20 @@ this ticket, or is absent, proceed.
 1. **Ensure the role resolves** — invoke `role-installer` with task
    `ensure qa`. It copies the role into `.agents/agents/` if missing and
    generates the shim for whatever harness is running.
-2. **On `READY`** — **write `tickets/.active`** with
+2. **On `READY`** — **verify the PR is merged first** (QA runs
+   post-merge, not on the PR branch). Check:
+   ```
+   gh pr view <PR> --json state --jq .state
+   ```
+   If the state is `OPEN`, **stop** — tell the user "QA runs after merge.
+   Techlead LGTM is the merge signal — merge the PR, then re-run
+   `/verify-qa`." Don't run QA on an unmerged branch; it tests the wrong
+   thing. Once the state is `MERGED`, proceed.
+   Then **move the ticket to `qa`** (QA starts, post-merge):
+   ```
+   node kanban/scripts/ticket-move.mjs <id> qa
+   ```
+   Write `tickets/.active` with
    `{"ticket":"<id>","agent":"qa","started":"<ISO now>"}`, then
    delegate to `qa` through your harness's subagent mechanism (Agent tool,
    `subagent` tool, …), foreground. Pass it the PR number.
@@ -40,7 +53,10 @@ this ticket, or is absent, proceed.
    Then **delete `tickets/.active`** (or set `agent: null`), so the board
    clears the working indicator.
    **On FAIL** — leave the ticket at `qa`, delete `tickets/.active`. The
-   ticket stays in the QA column until the coder fixes the failing criteria.
+   ticket stays in the QA column. Since the code is already merged to main,
+   the fix is a **new PR** (fix-forward) — don't revert unless the bug is
+   destructive. Delegate to `/implement-issue` for a fix sub-issue, then
+   re-review + re-merge + re-run QA on the new merge.
 4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context is independent of the implementation and
    review (verification by the same context that wrote or approved the
@@ -48,8 +64,12 @@ this ticket, or is absent, proceed.
    needed (restart to pick up the shim, or a subagent-capable tool) and
    stop.
 
-1. Check out the PR branch: `gh pr checkout <PR>`. Run the project's lint,
-   test, and e2e commands.
+1. **Check out `main` and pull the merged code** (QA runs post-merge, so
+   test the merged result, not a feature branch):
+   ```
+   git checkout main && git pull origin main
+   ```
+   Run the project's lint, test, and e2e commands.
 2. **CI status**: check `gh pr checks <PR>` (or `statusCheckRollup`). Still
    running → wait and re-check. Failed → a finding, same as a local
    failure, even if the local run passed.
@@ -73,16 +93,17 @@ this ticket, or is absent, proceed.
    CI configured); otherwise **FAIL** with the failing criteria/CI check
    listed. Never fix code yourself.
 
-   **Invoked standalone (not via `ship`)**: on FAIL, **delegate the fix back
-   to the `coder` role** (re-spawn, fresh context, same PR branch). Hand it the
-   failing criteria + evidence verbatim, tell it to fix on the same branch,
-   push, and return. Then re-run `verify-qa`. **Never fix the findings inline
-   in this context** — the agent running this skill is the QA verifier, not
-   the coder; fixing inline merges two roles that must stay separate, and the
-   QA agent isn't loading the coder's coding rules. "Fix manually" is only an
-   explicit user override when the user says they want to do it themselves —
-   and even then, **you** (this agent) don't edit the code; you hand the
-   findings to the user and stop.
+   **Invoked standalone (not via `ship`)**: on FAIL, **delegate the fix
+   forward as a new PR** — the code is already merged to main, so fix on a
+   fresh branch, not the old PR. Delegate to `/implement-issue` with the
+   failing criteria + evidence; it branches off main, fixes, opens a new PR.
+   Then re-review + re-merge + re-run `verify-qa`. **Never fix the findings
+   inline in this context** — the agent running this skill is the QA
+   verifier, not the coder; fixing inline merges two roles that must stay
+   separate, and the QA agent isn't loading the coder's coding rules. "Fix
+   manually" is only an explicit user override — and even then, **you**
+   (this agent) don't edit the code; you hand the findings to the user and
+   stop.
 7. On **PASS**: check whether this was the last sub-issue for its parent.
    Read the parent number from this issue's `## Parent` line, then list the
    parent's sub-issues and their state:
@@ -106,8 +127,9 @@ with one:
    `/implement-issue` on the next ready sub-issue (backend before frontend).
    If this was the **last** sub-issue for its parent, the parent is done —
    remind the user to close it (manual step, see step 7).
-2. **FAIL → Lanjut — `/implement-issue`**. Send the failing criteria back to
-   the `coder` role to fix on the same branch, then re-run QA.
+2. **FAIL → Lanjut — `/implement-issue`**. The code is merged; fix forward
+   on a new branch off main. Send the failing criteria to the `coder` role,
+   open a new PR, re-review, re-merge, re-run QA.
 3. **Diskusi** — a criterion is ambiguous or UNVERIFIED; say which and I'll
    re-check against the PRD.
 4. **Berhenti** — leave here. Resume later with `/relay` (detects the QA

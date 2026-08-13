@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Static review of an open PR against its issue's acceptance criteria — BLOCKING findings or LGTM, posted to the PR. Trigger on "code review pr", "review this PR", "techlead review".
+description: Static review of an open PR against its issue's acceptance criteria — BLOCKING findings or LGTM, posted to the PR. On LGTM, tells the user to merge manually (QA runs post-merge). Trigger on "code review pr", "review this PR", "techlead review".
 ---
 
 # review-pr
@@ -36,16 +36,19 @@ this ticket, or is absent, proceed.
    delegate to `techlead` through your harness's subagent mechanism (Agent
    tool, `subagent` tool, …), foreground. Pass it the PR number only — fresh
    context matters: don't hand it the implementer's reasoning, just the PR.
-3. **On LGTM** — **move the ticket to `qa`** (review passed, handoff to qa):
-   ```
-   node kanban/scripts/ticket-move.mjs <id> qa
-   ```
+3. **On LGTM** — review passed. **Do NOT move the ticket to `qa`** —
+   QA runs **post-merge**, not now. Leave the ticket at `review`, delete
+   `tickets/.active`, and **tell the user to merge the PR manually** (the
+   techlead's LGTM is the green light for merge — it's the moment for the
+   user's own self-review of the diff). The board stays in the Review
+   column until the merge lands; `verify-qa` will move it to `qa` once it
+   starts post-merge.
    Then **delete `tickets/.active`** (or set `agent: null`), so the board
    clears the working indicator.
    **On BLOCKING findings** — leave the ticket at `review` (it's not
    done), delete `tickets/.active`. The ticket stays in the Review column.
    When the fix comes back from `coder` and re-review passes, re-acquire
-   `.active` as techlead and move to `qa`; if re-review finds more blocking
+   `.active` as techlead and re-review; if re-review finds more blocking
    issues, send back to `coder` again. Max 3 rounds total before stopping.
 4. **On `NEEDS_RESTART` or no delegation tool available** — only run the
    phase inline if this context did **not** write the diff being reviewed
@@ -105,7 +108,11 @@ fixed here.
 
 ## After the review
 
-- **LGTM** → done, nothing further to do.
+- **LGTM** → review passed. **Tell the user to merge the PR manually** —
+  the techlead LGTM is the green light for merge, and the merge moment is
+  the user's self-review checkpoint. Do NOT move the ticket to `qa` here;
+  QA runs post-merge and will pick the ticket up once the merge lands. The
+  ticket stays in the Review column until merged.
 - **BLOCKING findings** → **delegate the fix back to the `coder` role**
   (re-spawn it as a subagent with fresh context, same branch). Hand it the
   findings list verbatim, tell it to fix each on the same branch, push, and
