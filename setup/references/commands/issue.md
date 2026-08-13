@@ -53,6 +53,10 @@ Actual state what you *observed*; keep any hypothesis about the cause in a
 separate note, never in place of the facts. Steps to reproduce is the single
 most important field — make it precise enough that someone else can trigger
 the failure from scratch; include error text verbatim.
+When in doubt, include more detail rather than less — the reader can skip
+what they don't need but can't invent what's missing. Name things
+explicitly (the exact field, button, or endpoint) instead of vague
+references like "it" or "this".
 
 ## Body template — feature parent issue
 
@@ -70,14 +74,22 @@ As a <role>, I want <goal>, so that <benefit>.
 - [ ] <condition verifiable when ALL sub-issues are done>
 - [ ] ...
 
+## Definition of done
+- [ ] All sub-issues merged and closed
+- [ ] Feature-level acceptance criteria above verified end-to-end (not just per sub-issue in isolation)
+- [ ] `review-pr` LGTM obtained on every sub-issue PR
+- [ ] `verify-qa` passed post-merge on main
+
 ## Out of scope
 <what this feature does NOT cover>
 ```
 
 The **User story** line frames the feature from the user's perspective (Agile
-Alliance): who it's for and why, not just what to build. Sub-issues appear
-automatically in GitHub's sub-issue panel — don't maintain a manual task list
-in the body.
+Alliance): who it's for and why, not just what to build. **Context** carries
+the Conversation — decisions and tradeoffs the team already discussed; a
+reader who wasn't in that discussion should still be able to follow the
+reasoning from this section alone. Sub-issues appear automatically in
+GitHub's sub-issue panel — don't maintain a manual task list in the body.
 
 ## Body template — sub-issue / task
 
@@ -92,21 +104,47 @@ in the body.
 - [ ] <clear, testable condition scoped to this layer>
 - [ ] ...
 
+## Definition of done
+- [ ] Acceptance criteria above all pass
+- [ ] Code follows this repo's coding rules (`coding-principles`, plus the stack-specific rule doc for this layer)
+- [ ] Tests covering the change added/updated and passing
+- [ ] Lint/typecheck clean
+- [ ] No regressions in adjacent flows touched by this change
+- [ ] PR opened, reviewed, and merged — `review-pr` LGTM obtained before merge
+
 ## Dependencies / related
-<e.g. "Blocked by #<backend sub-issue>" for the frontend sub-issue>
+<e.g. "Blocked by #<backend sub-issue> — needs <specific contract, e.g. the
+response shape of POST /expenses>" for the frontend sub-issue>
 ```
+
+**Description** names a concrete entry point — file path, function,
+endpoint, or component — to start from, and states *why* this is needed,
+not only what to build; the reader may not have been in the discussion that
+decided this.
 
 **Write acceptance criteria as Given / When / Then** for anything non-trivial
 (Gherkin / Cucumber): `Given <context>, When <action>, Then <observable
 outcome>`. Separating context, action, and outcome removes ambiguity and
 makes each criterion a script QA can execute directly — the same execution
 model this workflow already uses. Example: `Given a logged-in user, When they
-submit an expense with an empty amount, Then the API returns 422 and no
-record is created.` Keep plain `- [ ]` conditions for genuinely trivial
-checks — don't add ceremony where a one-liner is unambiguous. Every criterion,
-in either form, must be **verifiable by execution** (an observable outcome, a
-measured threshold, a specific output) — never a subjective bar like "code is
-clean" or "performance is good".
+submit an expense with an empty amount, Then the API returns 422 and a
+subsequent GET /expenses does not include it.` Keep plain `- [ ]` conditions
+for genuinely trivial checks — don't add ceremony where a one-liner is
+unambiguous. Every criterion, in either form, must be **verifiable by
+execution** (an observable outcome, a measured threshold, a specific output)
+— never a subjective bar like "the page looks good" or "it's fast"; quantify
+instead ("the hero image renders at ≥300×300px", "the endpoint responds in
+<200ms at p95").
+
+Keep each criterion to 3–5 clauses (Given/When/Then plus at most one or two
+Ands) — more, and it stops reading as a single testable behavior. The `Then`
+clause must name an **observable output** (a response, a UI state, a
+returned value) — never an internal implementation detail like a database
+row. Aim for roughly 3–7 acceptance criteria per sub-issue; needing more
+usually means the sub-issue covers more than one behavior — split it instead
+of padding this one.
+
+**Acceptance criteria vs. Definition of done**: acceptance criteria describe what THIS issue must do (feature-specific, verifiable by execution); Definition of done is the fixed process checklist that closes any ticket regardless of feature (tests, lint, review, merge, QA). Both are required — AC passing without the DoD checklist done is not a closeable ticket.
 
 ## Body template — chore
 

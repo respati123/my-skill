@@ -59,9 +59,12 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
    reads it for feature-level context, so a missing `## Parent` breaks that
    silently. Don't rely on `setup/references/commands/issue.md` to remember it; this skill owns
    it.
-4. Propose the full breakdown (parent + sub-issue titles) to the user before
+4. **Self-check each sub-issue against INVEST** — Independent, Small,
+   Testable in particular: does it depend on unstated context, or cover more
+   than one behavior? Split or rewrite before proposing it.
+5. Propose the full breakdown (parent + sub-issue titles) to the user before
    creating anything.
-5. **Create each ticket via the kanban API** — for each parent and sub-issue
+6. **Create each ticket via the kanban API** — for each parent and sub-issue
    in the breakdown, run:
    ```
    node kanban/scripts/ticket-create.mjs --type <type> --slug <slug> --title "<title>" --parent <parent-id> --labels <comma,separated>
@@ -72,7 +75,7 @@ shims (`.claude/agents/`, `.pi/agents/`, …); see the `setup` skill and
    file watcher syncs it to the board. Carry the FR-id into the title or slug
    (e.g. `--slug fr2-1-login-endpoint`) so traceability from BRD → PRD →
    ticket survives.
-6. Report the created ticket ids and offer to start `implement-issue` on the
+7. Report the created ticket ids and offer to start `implement-issue` on the
    first ready sub-issue (backend before frontend, per the dependency order
    from step 2).
 
