@@ -30,6 +30,15 @@ reversible, and not repeated — a migrated Ticket does not pull further
 edits back from GitHub.
 _Avoid_: Sync, Push (both imply a repeatable, two-way operation)
 
+**GitHub adapter** (`kanban/lib/gh.mjs`):
+The module that owns all `gh` CLI interaction — creating issues, closing
+them, linking sub-issues, resolving the GitHub database id from an issue
+number. The seam between the Ticket domain and GitHub's issue model:
+callers pass Tickets + issue numbers, never shell strings or URLs. Distinct
+from the Ticket store (`kanban/lib/ticket-store.mjs`), which owns the
+file-level `.md` writes. Migration (the flow) uses both.
+_Avoid_: gh client, GitHub service, issue client
+
 ## Model
 
 model-version: 1

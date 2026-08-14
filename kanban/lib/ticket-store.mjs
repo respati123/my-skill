@@ -23,6 +23,12 @@ export const TICKETS_DIR = process.env.TICKETS_DIR || path.join(ROOT, 'tickets')
 export const VALID_TYPES = ['feat', 'fix', 'task', 'chore', 'docs']
 export const VALID_STATUSES = ['open', 'in-progress', 'review', 'qa', 'done']
 
+/** The statuses that count as "not done yet" — open work in flight. */
+const OPEN_STATUSES = new Set(['open', 'in-progress', 'review', 'qa'])
+export function isOpen(status) {
+  return OPEN_STATUSES.has(status)
+}
+
 function titleCase(slug) {
   return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
