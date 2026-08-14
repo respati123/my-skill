@@ -108,7 +108,8 @@ Options:
 
 ### Node 3 — Backend
 
-Three sub-decisions, asked together (they constrain each other):
+Eight sub-decisions. 3a-3g are asked in sequence, each constraining the
+next; 3h is fixed by the language choice and only recorded, never asked.
 
 **3a. Language + framework.** Default by what this repo already supports with
 a reference doc + coding rules:
@@ -149,12 +150,63 @@ architecture reference doc instead."
 - Go → **sqlc** (recommended; type-safe from SQL) or GORM
 - Java/Kotlin → **Spring Data JPA** / Hibernate
 
+**3d. Redis.** Always asked — never silently decided from a signal, only
+defaulted from one:
+- Phase 1 found a high-tx/bursty/caching signal → default **Ya**, reasoning:
+  "PRD menyebut [sinyal] — Redis direkomendasikan."
+- No signal → default **Tidak**, reasoning: "Tidak ada sinyal beban tinggi —
+  bisa ditambah nanti kalau perlu." Adding a service later is cheap; running
+  one nobody needed is a standing cost.
+
+**3e. Background job queue.** Asked right after Redis, same always-asked
+rule — default from Phase 1's "background jobs / email queue / scheduled
+reports" signal, **Tidak** otherwise. If **Ya**, the recommended
+implementation depends on the Redis answer, not asked separately:
+- Redis = Ya → **BullMQ** (TS), **Celery** (Python), **asynq** (Go) — reuses
+  the Redis already provisioned, no new service.
+- Redis = Tidak → **RabbitMQ** — flag plainly that this adds a new service
+  to deploy and operate.
+
+**3f. Auth strategy.** Always asked, four options, same recommended default
+every time regardless of signal — rolling your own auth is a security
+surface that's easy to get wrong (hashing, refresh tokens, session
+fixation), so a managed library is the default even for simple apps:
+- **Better Auth** (recommended, always) — open-source, self-hosted, no
+  per-MAU cost, native TypeScript.
+- **Clerk / Auth0 / Supabase Auth** — pick when there's an existing vendor
+  preference, or (Clerk) when a ready-made UI is worth more than
+  self-hosting.
+- **JWT stateless, roll-your-own** — minimal-dependency cases only.
+- **Session + Redis, roll-your-own** — only sensible when 3d's Redis answer
+  is Ya.
+
+**3g. Logging.** Always asked, not signal-gated — every backend needs this
+from day one, unlike Sentry/OTel below which only earn their keep once
+there's production load:
+- TS/Node → **Pino** (recommended; structured JSON, fastest in the Hono/Bun/
+  Fastify ecosystem) or Winston (heavier, wider plugin ecosystem) or
+  `console.log` (prototyping only — flag as not for production).
+- Python → **structlog**
+- Go → **slog** (stdlib, Go 1.21+)
+- Java/Kotlin → **SLF4J + Logback**
+
+**3h. Testing framework.** Not asked — fixed per language and recorded in
+`docs/architecture.md`, same treatment as Node 4c's frontend state/data
+defaults. Nearly always one dominant choice per language; interrupting the
+grill to confirm it buys nothing:
+- TS + Hono/Bun → **Vitest** + **Supertest** (API tests)
+- TS + Express → **Vitest** or Jest
+- Python → **pytest**
+- Go → stdlib `testing` (+ testify)
+- Java/Kotlin → **JUnit 5**
+- Frontend present (Node 4) → add **Playwright** for E2E, also fixed.
+
 **Infra add-ons (driven by Phase 1 signals — propose, don't ask blind):**
 - Realtime → WebSocket lib per stack (Hono: `@hono/node-ws` / Bun ws; Express
   → `ws`; FastAPI → Starlette websockets; Go → gorilla/websocket or nhooyr's)
-- High tx → Redis (cache) + queue (BullMQ / Celery / asynq)
 - Search → Meilisearch (simple) or Postgres FTS (if already on PG)
-- Monitoring → OpenTelemetry + Pino/slog structured logs + Sentry
+- Monitoring → OpenTelemetry + Sentry (structured logging is 3f, not this —
+  this is for tracing/error-tracking once there's real production load)
 - File storage → S3-compatible (R1, R2, MinIO local)
 
 List only the ones the PRD signals. Don't propose Kafka for a CRUD app.
@@ -239,6 +291,11 @@ Status: Confirmed
 - Language + framework: <X> — <reasoning>
 - Database: <X> — <reasoning>
 - ORM: <X> — <reasoning>
+- Redis: <yes — reasoning | no>
+- Background job queue: <no | X — reasoning>
+- Auth: <X> — <reasoning>
+- Logging: <X>
+- Testing: <X> (fixed per language, not grilled)
 - Infra: <list each add-on + which PRD signal triggered it>
 
 ### Frontend  (omit if backend-only)
@@ -270,8 +327,9 @@ bury an architectural decision in a stack doc when it deserves its own ADR.
 
 Replace the AGENTS.md `## Stack` section (which was `TODO` or placeholder)
 with the confirmed stack from `docs/architecture.md` — language(s),
-framework(s), database, ORM, key infra. This is what `implement-issue` and the
-`coder` role read before writing the first line of code.
+framework(s), database, ORM, Redis/queue, auth, logging, testing, key infra.
+This is what `implement-issue` and the `coder` role read before writing the
+first line of code.
 
 ## Resume
 
