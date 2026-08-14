@@ -157,10 +157,49 @@ const server = http.createServer(async (req, res) => {
     return json(res, 200, { ok: true })
   }
 
+  // ── Serve the built frontend (production mode) ────────────────────────
+  // API routes above are matched first; anything else is a frontend route.
+  // If dist/ exists, serve it (SPA — index.html fallback for client routing).
+  // If dist/ doesn't exist, tell the user to run the dev server or build.
+  if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
+    const distDir = path.join(__dirname, 'dist')
+    if (!fs.existsSync(distDir)) {
+      return json(res, 200, {
+        message: 'Board not built. Run one of:',
+        dev: 'cd kanban && pnpm dev  (hot reload, port 5173)',
+        build: 'cd kanban && pnpm build && node server.mjs  (serves dist/ on this port)',
+      })
+    }
+    // resolve the file path, prevent traversal
+    let filePath = path.join(distDir, decodeURIComponent(url.pathname))
+    if (url.pathname === '/' || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+      filePath = path.join(distDir, 'index.html') // SPA fallback
+    }
+    if (!filePath.startsWith(distDir)) {
+      return json(res, 403, { error: 'forbidden' })
+    }
+    const ext = path.extname(filePath)
+    const types = {
+      '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
+      '.json': 'application/json', '.svg': 'image/svg+xml',
+      '.png': 'image/png', '.jpg': 'image/jpeg', '.ico': 'image/x-icon',
+      '.woff': 'font/woff', '.woff2': 'font/woff2',
+    }
+    try {
+      const body = fs.readFileSync(filePath)
+      res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream' })
+      res.end(body)
+    } catch {
+      res.writeHead(404, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'not found' }))
+    }
+    return
+  }
+
   return json(res, 404, { error: 'not found' })
 })
 
 server.listen(PORT, () => {
-  console.log(`[kanban] API at http://localhost:${PORT}/api/tickets`)
+  console.log(`[kanban] API + board at http://localhost:${PORT}`)
   console.log(`[kanban] watching ${TICKETS_DIR}`)
 })
