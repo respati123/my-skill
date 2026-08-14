@@ -14,9 +14,9 @@
  *   qa PASS         → ticket-move.mjs <id> done
  */
 
-const BASE = process.env.KANBAN_URL || 'http://localhost:3211'
+import { VALID_STATUSES } from '../lib/ticket-store.mjs'
 
-const VALID_STATUSES = ['open', 'in-progress', 'review', 'qa', 'done']
+const BASE = process.env.KANBAN_URL || 'http://localhost:3211'
 
 const [id, status] = process.argv.slice(2)
 

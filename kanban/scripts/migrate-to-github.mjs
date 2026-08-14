@@ -2,32 +2,27 @@
 /**
  * Migrate local tickets to GitHub.
  *
- * One-way: local → GitHub. After migration, local .md files become
- * read-only shadows (github-url filled in the frontmatter).
+ * One-way: local → GitHub. After migration, local .md files collapse to a
+ * short description + a link — GitHub holds the authoritative detail from
+ * then on. See docs/adr/0001-ticket-file-stays-source-of-truth.md and
+ * CONTEXT.md's "Migration" entry.
  *
  * Usage:
  *   node migrate-to-github.mjs --parent 0001 [--all | --open]
  *
  * Flow:
- *   1. Read all tickets/*.md
- *   2. Skip ones that already have a github-url (already migrated)
- *   3. For each: create a GitHub issue from the .md body + frontmatter
+ *   1. Read all tickets via ticket-store
+ *   2. Skip ones that already have a github_url (already migrated)
+ *   3. For each: create a GitHub issue from the ticket's body + frontmatter
  *   4. Link sub-issues to parent via GitHub's sub_issue API
- *   5. Write github-url back into each .md frontmatter
+ *   5. Collapse each migrated ticket's local body to description + link
  *   6. Report: created / skipped / failed
  *
  * Requires: gh CLI authenticated, and a GitHub remote configured.
  */
 
-import fs from 'node:fs'
-import path from 'node:path'
 import { execSync } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
-import matter from 'gray-matter'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const ROOT = path.resolve(__dirname, '..')
-const TICKETS_DIR = path.join(ROOT, 'tickets')
+import { listTickets, collapseToStub } from '../lib/ticket-store.mjs'
 
 // ── Args ────────────────────────────────────────────────────────────────
 function parseArgs(argv) {
@@ -37,18 +32,25 @@ function parseArgs(argv) {
       case '--all': args.scope = 'all'; break
       case '--open': args.scope = 'open'; break
       case '--parent': args.parent = argv[++i]; break
+      case '--dry-run': args.dryRun = true; break
       case '--help': case '-h':
-        console.log(`Usage: migrate-to-github.mjs [--all | --open] [--parent <id>]
+        console.log(`Usage: migrate-to-github.mjs [--all | --open] [--parent <id>] [--dry-run]
 
   --all        migrate ALL local tickets (including done/closed)
   --open       migrate only open tickets (open, in-progress, review, qa)
   --parent <id>  migrate only tickets whose parent is <id>
+  --dry-run    print what would migrate without creating anything on GitHub
 
 Requires: gh CLI authenticated + a GitHub remote (git remote get-url origin).
-After migration, local .md files get github-url in frontmatter (read-only shadow).
+After migration, local tickets collapse to a short description + a link to
+the GitHub issue (read-only from then on).
 
-Idempotent: tickets that already have github-url are skipped.`)
+Idempotent: tickets that already have a github_url are skipped.`)
         process.exit(0)
+      default:
+        console.error(`✗ Unknown flag: ${argv[i]}`)
+        console.error('Run with --help for usage.')
+        process.exit(1)
     }
   }
   return args
@@ -81,8 +83,6 @@ const TYPE_TO_LABEL = {
 
 function createIssue(repo, ticket) {
   const label = TYPE_TO_LABEL[ticket.type] || 'task'
-  const body = matter(ticket.raw).content
-  // build the title: "FR-2.1 — Login Page" or just "Login Page"
   const title = ticket.title
   const extraLabels = ticket.labels.length ? ` --label ${ticket.labels.map(l => `"${l}"`).join(',')}` : ''
 
@@ -91,7 +91,7 @@ function createIssue(repo, ticket) {
       'issue create',
       `--repo ${repo}`,
       `--title "${title.replace(/"/g, '\\"')}"`,
-      `--body "${body.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`,
+      `--body "${ticket.body.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`,
       `--label ${label}${extraLabels}`,
     )
     return issueUrl
@@ -133,33 +133,15 @@ try {
   process.exit(1)
 }
 
-if (!fs.existsSync(TICKETS_DIR)) {
-  console.error(`✗ No tickets/ directory at ${TICKETS_DIR}`)
+const tickets = listTickets()
+
+if (tickets.length === 0) {
+  console.error('✗ No tickets found. Is tickets/ empty?')
   process.exit(1)
 }
 
-// load all local tickets
-const files = fs.readdirSync(TICKETS_DIR).filter((f) => f.endsWith('.md'))
-const tickets = files.map((filename) => {
-  const filepath = path.join(TICKETS_DIR, filename)
-  const raw = fs.readFileSync(filepath, 'utf-8')
-  const { data, content } = matter(raw)
-  return {
-    filename,
-    filepath,
-    raw,
-    id: data.id,
-    type: data.type,
-    title: data.title || filename.replace(/\.md$/, '').replace(/^\d+-\w+-/, '').replace(/-/g, ' '),
-    status: data.status || 'open',
-    parent: data.parent || null,
-    labels: data.labels || [],
-    githubUrl: data['github-url'] || null,
-  }
-})
-
 // filter
-let filtered = tickets.filter((t) => !t.githubUrl) // skip already migrated
+let filtered = tickets.filter((t) => !t.github_url) // skip already migrated
 if (args.scope === 'open') {
   const openStatuses = ['open', 'in-progress', 'review', 'qa']
   filtered = filtered.filter((t) => openStatuses.includes(t.status))
@@ -169,19 +151,24 @@ if (args.parent) {
 }
 
 if (filtered.length === 0) {
-  console.log('No tickets to migrate (all already have github-url, or none match the filter).')
+  console.log('No tickets to migrate (all already have a github_url, or none match the filter).')
   process.exit(0)
 }
 
-console.log(`Migrating ${filtered.length} ticket(s) to ${repo}…\n`)
+console.log(`${args.dryRun ? 'Dry run: would migrate' : 'Migrating'} ${filtered.length} ticket(s) to ${repo}…\n`)
 
 const OPEN_STATUSES = ['open', 'in-progress', 'review', 'qa']
 let created = 0
 let skipped = 0
 const idToUrl = {} // for sub-issue linking after all are created
 
-// Phase 1: create all issues
+// Phase 1: create all issues, then collapse the local ticket to a stub
 for (const t of filtered) {
+  if (args.dryRun) {
+    console.log(`  #${t.id} ${t.title} → would create GitHub issue, then collapse local body`)
+    created++
+    continue
+  }
   process.stdout.write(`  #${t.id} ${t.title}… `)
   try {
     const url = createIssue(repo, t)
@@ -193,11 +180,7 @@ for (const t of filtered) {
       if (m) gh('issue close', m[1], `--repo ${repo}`)
     }
 
-    // write github-url back into frontmatter
-    const { data, content } = matter(t.raw)
-    data['github-url'] = url
-    data.id = String(data.id).padStart(4, '0')
-    fs.writeFileSync(t.filepath, matter.stringify(content, data), 'utf-8')
+    collapseToStub(t.id, url)
 
     console.log(`✓ ${url}`)
     created++
@@ -208,17 +191,21 @@ for (const t of filtered) {
 }
 
 // Phase 2: link sub-issues to parents
-console.log('\nLinking sub-issues…')
-for (const t of filtered) {
-  if (t.parent && idToUrl[t.id] && idToUrl[t.parent]) {
-    process.stdout.write(`  #${t.id} → parent #${t.parent}… `)
-    try {
-      linkSubIssue(repo, idToUrl[t.parent], idToUrl[t.id])
-      console.log('✓')
-    } catch {
-      console.log('⚠ (non-fatal)')
+if (args.dryRun) {
+  console.log('\n(dry run — skipping sub-issue linking)')
+} else {
+  console.log('\nLinking sub-issues…')
+  for (const t of filtered) {
+    if (t.parent && idToUrl[t.id] && idToUrl[t.parent]) {
+      process.stdout.write(`  #${t.id} → parent #${t.parent}… `)
+      try {
+        linkSubIssue(repo, idToUrl[t.parent], idToUrl[t.id])
+        console.log('✓')
+      } catch {
+        console.log('⚠ (non-fatal)')
+      }
     }
   }
 }
 
-console.log(`\nDone: ${created} created, ${skipped} failed, ${tickets.length - filtered.length} already migrated.`)
+console.log(`\n${args.dryRun ? 'Dry run: ' : ''}Done: ${created} ${args.dryRun ? 'would be created' : 'created'}, ${skipped} failed, ${tickets.length - filtered.length} already migrated.`)

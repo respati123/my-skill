@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "server": "node server.mjs"
+    "server": "node server.mjs",
+    "test": "node --test scripts/ticket-store.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

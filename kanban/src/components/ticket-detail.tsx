@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { TYPE_STYLES, TYPE_LABELS } from '@/types'
+import { TYPE_STYLES, TYPE_LABELS, COLUMNS } from '@/types'
 import type { Ticket, TicketStatus } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -22,14 +22,6 @@ interface Props {
   onClose: () => void
   onStatusChange: (status: TicketStatus) => void
 }
-
-const STATUS_OPTIONS: { value: TicketStatus; label: string }[] = [
-  { value: 'open', label: 'Backlog' },
-  { value: 'in-progress', label: 'Coder' },
-  { value: 'review', label: 'Review' },
-  { value: 'qa', label: 'QA' },
-  { value: 'done', label: 'Done' },
-]
 
 export function TicketDetail({ ticket, onClose, onStatusChange }: Props) {
   return (
@@ -64,9 +56,9 @@ export function TicketDetail({ ticket, onClose, onStatusChange }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
+                  {COLUMNS.map((col) => (
+                    <SelectItem key={col.id} value={col.id}>
+                      {col.title}
                     </SelectItem>
                   ))}
                 </SelectContent>
